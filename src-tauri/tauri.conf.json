@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "jedit",
+  "productName": "jeditr",
   "version": "0.1.0",
-  "identifier": "com.jedit.app",
+  "identifier": "com.jeditr.app",
   "build": {
     "beforeDevCommand": "deno task dev",
     "devUrl": "http://localhost:1420",
@@ -12,9 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "jedit",
-        "width": 800,
-        "height": 600
+        "decorations": false
       }
     ],
     "security": {
@@ -31,5 +29,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
   }
 }
