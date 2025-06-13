@@ -1,61 +1,83 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
-import { useEffect, useRef } from 'react';
+import { initVimMode } from 'monaco-vim';
+import { BreadcrumbBar } from './BreadcrumbBar';
+import './Editor.css';
 
 interface EditorProps {
-  initialCode: string;
-  language?: string;
-  theme?: string;
+  content: string;
+  onChange: (value: string) => void;
+  path: string;
 }
 
-const Editor: React.FC<EditorProps> = ({ initialCode, language = 'typescript', theme = 'vs-dark' }) => {
+export const Editor: React.FC<EditorProps> = ({ content, onChange, path }) => {
   const editorRef = useRef<HTMLDivElement>(null);
+  const vimStatusRef = useRef<HTMLDivElement>(null);
   const editorInstanceRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const vimModeRef = useRef<ReturnType<typeof initVimMode> | null>(null);
 
+  // Initialize editor
   useEffect(() => {
     if (editorRef.current) {
-      editorInstanceRef.current = monaco.editor.create(editorRef.current, {
-        value: initialCode,
-        language: language,
-        theme: theme,
+      const editor = monaco.editor.create(editorRef.current, {
+        value: content,
+        language: 'plaintext',
+        theme: 'vs-dark',
         automaticLayout: true,
-        minimap: {
-          enabled: true
-        },
+        minimap: { enabled: false },
         scrollBeyondLastLine: false,
         fontSize: 14,
         lineNumbers: 'on',
-        roundedSelection: false,
-        scrollbar: {
-          vertical: 'visible',
-          horizontal: 'visible',
-          useShadows: false,
-          verticalScrollbarSize: 10,
-          horizontalScrollbarSize: 10
-        },
-        wordWrap: 'on',
-        wrappingStrategy: 'advanced',
-        lineDecorationsWidth: 0,
-        lineNumbersMinChars: 3,
-        glyphMargin: false,
-        folding: true,
-        renderLineHighlight: 'all',
         renderWhitespace: 'selection',
-        contextmenu: true,
-        mouseWheelZoom: true,
-        padding: {
-          top: 10,
-          bottom: 10
-        }
+        tabSize: 2,
+        wordWrap: 'on',
       });
+
+      editorInstanceRef.current = editor;
+
+      // Set up change handler
+      editor.onDidChangeModelContent(() => {
+        const value = editor.getValue();
+        onChange(value);
+      });
+
+      return () => {
+        editor.dispose();
+      };
+    }
+  }, []); // Empty dependency array since we only want to initialize once
+
+  // Initialize Vim mode
+  useEffect(() => {
+    if (editorInstanceRef.current && vimStatusRef.current && !vimModeRef.current) {
+      vimModeRef.current = initVimMode(editorInstanceRef.current, vimStatusRef.current);
     }
 
     return () => {
-      editorInstanceRef.current?.dispose();
+      if (vimModeRef.current) {
+        vimModeRef.current.dispose();
+        vimModeRef.current = null;
+      }
     };
-  }, [initialCode, language, theme]);
+  }, []); // Empty dependency array since we only want to initialize once
 
-  return <div ref={editorRef} style={{ height: '100%', width: '100%', overflow: 'hidden' }} />;
+  // Update content when it changes externally
+  useEffect(() => {
+    if (editorInstanceRef.current) {
+      const currentValue = editorInstanceRef.current.getValue();
+      if (currentValue !== content) {
+        editorInstanceRef.current.setValue(content);
+      }
+    }
+  }, [content]);
+
+  return (
+    <div className="editor-wrapper">
+      <BreadcrumbBar path={path} />
+      <div className="editor-container">
+        <div ref={editorRef} className="monaco-editor" />
+        <div ref={vimStatusRef} className="vim-status-bar" />
+      </div>
+    </div>
+  );
 };
-
-export default Editor;
