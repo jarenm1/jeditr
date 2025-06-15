@@ -1,0 +1,9 @@
+{
+  "name": "Solarized Dark",
+  "colors": {
+    "--color-bg": "#002b36",
+    "--color-fg": "#839496",
+    "--color-primary": "#268bd2",
+    "--color-accent": "#b58900"
+  }
+} 
