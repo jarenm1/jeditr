@@ -125,7 +125,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           ...pane,
           tabs: pane.tabs.map(tab =>
             tab.id === tabId
-              ? { ...tab, content, isDirty: true, language: detectLanguage(tab.path, content) }
+              ? {
+                  ...tab,
+                  content,
+                  isDirty: content !== tab.content,
+                  language: detectLanguage(tab.path, content),
+                }
               : tab
           ),
         };

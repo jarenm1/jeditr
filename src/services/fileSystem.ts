@@ -113,10 +113,11 @@ export async function fetchAndMergeSettings(): Promise<any> {
   } catch (e) {
     // If file doesn't exist, create it as empty
     error('settings.json not found, creating empty file');
-    const emptySettings = new TextEncoder().encode('{}');
-    const file = await create('settings.json', { baseDir: BaseDirectory.AppConfig });
-    await writeFile('settings.json', emptySettings, { baseDir: BaseDirectory.AppConfig });
-    file.close();
+    await writeFile(
+      'settings.json',
+      new TextEncoder().encode('{}'),
+      { baseDir: BaseDirectory.AppConfig, create: true }
+    );
   }
   return { ...settingsRegistry.getDefaults(), ...userSettings };
 }

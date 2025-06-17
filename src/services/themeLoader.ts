@@ -11,7 +11,8 @@ const themeRegistry: Record<string, Theme> = {};
 export async function ensureUserThemesDir() {
   await mkdir(THEME_DIR, {
     baseDir: BaseDirectory.AppConfig,
-  });
+    recursive: true,          // prevent EEXIST
+  }).catch(() => void 0);     // ignore “already exists”
 }
 
 export async function loadAllThemes(): Promise<Theme[]> {

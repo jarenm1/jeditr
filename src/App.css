@@ -7,7 +7,8 @@
   --color-tertiary: rgba(50, 50, 50, 0.7);      /* slightly lighter neutral */
   --color-bg: rgba(20, 20, 20, 0.8);            /* background, more transparent */
   --color-fg: rgba(240, 240, 240, 0.95);        /* foreground, almost solid */
-  --color-accent: rgba(245, 158, 66, 0.85);     /* orange accent, semi-transparent */
+  --color-info: rgba(60, 130, 246, 0.85);       /* blue, semi-transparent */
+  --color-warning: rgba(245, 158, 66, 0.85);     /* orange accent, semi-transparent */
   --color-danger: rgba(239, 68, 68, 0.85);      /* red, semi-transparent */
 }
 

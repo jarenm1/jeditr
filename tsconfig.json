@@ -13,6 +13,9 @@
       "@store/*": ["./src/store/*"],
       "@language/*": ["./src/language/*"],
       "@types/*": ["./src/types/*"],
+      "@editor/*": ["./src/editor/*"],
+      "@ubar/*": ["./src/ubar/*"],
+      "@plugins/*": ["./src/plugins/*"]
     },
 
     /* Bundler mode */

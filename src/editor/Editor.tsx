@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
 import { v4 as uuidv4 } from 'uuid';
-import { useVimStore } from '@store/vimStore';
+import { useVimStore } from '@ubar/ubarStore/vimStore';
 
 /**
  * EditorSettings
@@ -40,25 +40,8 @@ export const Editor: React.FC<EditorProps> = ({ content, language = 'plaintext',
     const [themeReady, setThemeReady] = React.useState(false);
     const { setMode, setCommand, setMessage } = useVimStore();
 
-    // 1. Define and set the theme, then mark as ready
-    useEffect(() => {
-      if (!settings?.theme) return;
-      if (typeof settings.theme === 'string') {
-        monaco.editor.setTheme(settings.theme);
-        setThemeReady(true);
-      } else if (typeof settings.theme === 'object' && settings.theme.base) {
-        if (!customThemeNameRef.current) {
-          customThemeNameRef.current = 'custom-theme-' + uuidv4();
-        }
-        monaco.editor.defineTheme(customThemeNameRef.current, settings.theme);
-        monaco.editor.setTheme(customThemeNameRef.current);
-        setThemeReady(true);
-      }
-    }, [settings?.theme, settings?.themeName]);
-
     // 2. Only create the editor once
     useEffect(() => {
-        if (!themeReady) return;
         if (editorRef.current && !editorInstance.current) {
             editorInstance.current = monaco.editor.create(editorRef.current, {
                 value: content,

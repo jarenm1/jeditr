@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getAllThemes, applyTheme, Theme } from '@services/themeLoader';
-import { mapKey, defineEx } from '@services/vimApi';
+import { mapKey, defineEx } from '@plugins/vim/vimApi';
 
 interface ThemePickerModalProps {
   isOpen: boolean;

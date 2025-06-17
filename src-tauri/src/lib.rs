@@ -4,8 +4,8 @@ use std::fs;
 use std::path::Path;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
-use window_vibrancy::*;
 use tauri_plugin_log::{Target, TargetKind};
+use window_vibrancy::*;
 
 #[derive(Serialize)]
 struct FileMetadata {
@@ -52,22 +52,33 @@ async fn save_file(path: &str, content: &str) -> Result<(), String> {
     Ok(())
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
+pub fn run_with_args(working_dir: Option<String>) {
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
-        .setup(|app| {
+        .setup(move |app| {
             let window = app.get_webview_window("main").unwrap();
 
             #[cfg(target_os = "windows")]
             clear_mica(&window).expect("Failed to apply blur");
+
+            // Store the working directory in the app state for later use
+            if let Some(dir) = &working_dir {
+                window.set_title(&format!("jeditr - {}", dir)).ok();
+                app.manage(dir.clone());
+            }
 
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![open_file, read_file, save_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+// Keep the original run for compatibility
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    run_with_args(None);
 }
