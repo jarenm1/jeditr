@@ -59,7 +59,9 @@ pub fn run_with_args(working_dir: Option<String>) {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
         .setup(move |app| {
-            let window = app.get_webview_window("main").unwrap();
+            let window = app
+                .get_webview_window("main")
+                .ok_or_else(|| eyre::eyre!("Main window not found"))?;
 
             #[cfg(target_os = "windows")]
             clear_mica(&window).expect("Failed to apply blur");

@@ -19,6 +19,10 @@ const isEditorFocused = () => {
 const isVimEnabled = () => useEditorStore.getState().vimEnabled;
 const disposeVimDispatcher = setupGlobalVimDispatcher(getVimMode, isEditorFocused, isVimEnabled);
 
+if (import.meta.hot) {
+  import.meta.hot.dispose(disposeVimDispatcher);
+}
+
 registerVimKeybinding('<leader>th', 'openThemePicker');
 registerVimAction('openThemePicker', () => {
   // You can trigger a notification or open a modal here

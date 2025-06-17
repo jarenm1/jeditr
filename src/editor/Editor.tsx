@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
-import { v4 as uuidv4 } from 'uuid';
 import { useVimStore } from '@ubar/ubarStore/vimStore';
 
 /**

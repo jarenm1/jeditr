@@ -13,6 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
+        "title": "Jeditr",
         "decorations": false,
         "transparent": true
       }

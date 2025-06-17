@@ -1,10 +1,9 @@
 import { showNotification } from './api';
-import { registerBottomBarPlugin, registerEditorPanePlugin } from './registry';
 
 // Type for plugin config
 export interface PluginConfig {
   name: string;
-  url: string; // Can be a local or remote path
+  url: string; // Local or remote path to the plugin JS file
   config?: any;
 }
 
@@ -18,35 +17,27 @@ export const pluginConfigs: PluginConfig[] = [
   // Add more plugins here
 ];
 
-// Loader function to fetch and evaluate plugin code
-export async function loadPlugin(plugin: PluginConfig) {
-  try {
-    const res = await fetch(plugin.url);
-    if (!res.ok) throw new Error(`Failed to fetch plugin: ${plugin.url}`);
-    const code = await res.text();
-    // Provide the plugin API to the plugin code
-    const pluginFunc = new Function(
-      'showNotification',
-      'registerBottomBarPlugin',
-      'registerEditorPanePlugin',
-      'config',
-      code
-    );
-    pluginFunc(
-      showNotification,
-      registerBottomBarPlugin,
-      registerEditorPanePlugin,
-      plugin.config || {}
-    );
-    showNotification(plugin.name, 'Plugin loaded successfully!', 'info');
-  } catch (err: any) {
-    showNotification(plugin.name, `Failed to load plugin: ${err.message}`, 'error');
-  }
+// Minimal worker loader for plugins
+export function loadPluginInWorker(plugin: PluginConfig) {
+  // Create a worker from the plugin JS file
+  const worker = new Worker(plugin.url, { type: 'module' });
+
+  // Listen for messages from the plugin
+  worker.onmessage = (event) => {
+    const { type, payload } = event.data;
+    if (type === 'showNotification') {
+      showNotification(plugin.name, payload.message, payload.severity);
+    }
+    // Add more API message handling here as needed
+  };
+
+  // Optionally, send initial config to the worker
+  worker.postMessage({ type: 'init', config: plugin.config });
 }
 
 // Load all plugins from the config array
 export async function loadAllPlugins() {
   for (const plugin of pluginConfigs) {
-    await loadPlugin(plugin);
+    loadPluginInWorker(plugin);
   }
 }

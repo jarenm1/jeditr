@@ -1,3 +1,6 @@
+import { StateCreator } from 'zustand';
+import { nanoid } from 'nanoid';
+
 /**
  * EditorPane represents a layout-only container (a split view or box) in the editor, similar to VSCode's split panes.
  * Each pane is responsible only for layout and holds a reference to a contentId, which determines what is rendered inside.
@@ -9,8 +12,6 @@
  *
  * This slice manages the state and actions related to layout panes, such as adding, removing, and switching panes.
  */
-import { StateCreator } from 'zustand';
-
 export interface EditorPane {
   id: string;
   contentId: string;
@@ -26,7 +27,7 @@ export interface PaneSlice {
 export const createPaneSlice: StateCreator<PaneSlice, [], [], PaneSlice> = (set, get) => ({
   panes: [],
   addPane: (contentId) => {
-    const newId = `pane-${Date.now()}`;
+    const newId = `pane-${nanoid()}`;
     set(state => ({
       panes: [
         ...state.panes,
