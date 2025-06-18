@@ -1,13 +1,32 @@
-// Simple nanoid implementation for the worker
-function nanoid(size = 21) {
-  return Array.from({ length: size }, () =>
-    (Math.random() * 36 | 0).toString(36)
-  ).join('');
-}
+// this plugin is used to test the notification system and modal actions
 
-let count = 1;
-setInterval(() => {
-  self.postMessage({ type: 'showNotification', payload: { message: `Hello from the test plugin! ${count++}`, severity: 'info', timestamp: Date.now() } });
-  self.postMessage({ type: 'showNotification', payload: { message: `Hello from the test plugin! ${count++}`, severity: 'warning', timestamp: Date.now() } });
-  self.postMessage({ type: 'showNotification', payload: { message: `Hello from the test plugin! ${count++}`, severity: 'error', timestamp: Date.now() } });
-}, 10000);
+// Show the modal only once
+self.postMessage({
+  type: 'showModal',
+  payload: {
+    content: `
+      <h2>Test Plugin Modal</h2>
+      <p>Click a button to show a notification of that type:</p>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button style="cursor: pointer;" data-action="notify-info">Show Info</button>
+        <button style="cursor: pointer;" data-action="notify-warning">Show Warning</button>
+        <button style="cursor: pointer;" data-action="notify-error">Show Error</button>
+      </div>
+      <pre><code>console.log('Hello from the test plugin!');</code></pre>
+    `
+  }
+});
+
+// Listen for actions from the modal buttons
+self.onmessage = (event) => {
+  const { type, action } = event.data || {};
+  if (type === 'modal-action') {
+    if (action === 'notify-info') {
+      self.postMessage({ type: 'showNotification', payload: { message: 'Info notification from modal button!', severity: 'info' } });
+    } else if (action === 'notify-warning') {
+      self.postMessage({ type: 'showNotification', payload: { message: 'Warning notification from modal button!', severity: 'warning' } });
+    } else if (action === 'notify-error') {
+      self.postMessage({ type: 'showNotification', payload: { message: 'Error notification from modal button!', severity: 'error' } });
+    }
+  }
+};

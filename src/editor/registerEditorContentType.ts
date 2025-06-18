@@ -1,10 +1,10 @@
 import React from 'react';
 import { registerContentType } from '@editor/contentRegistry';
-import { Editor } from '@editor/Editor';
+import { CodeMirrorEditor } from '@editor/CodeMirrorEditor';
 
 registerContentType('editor', function EditorContentRenderer({ content, editorSettings }) {
   const { content: editorContent, language, onChange } = content.data;
-  return React.createElement(Editor, {
+  return React.createElement(CodeMirrorEditor, {
     content: editorContent,
     language,
     onChange,

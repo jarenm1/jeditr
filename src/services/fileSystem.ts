@@ -1,57 +1,29 @@
 import { invoke } from '@tauri-apps/api/core';
-import { readTextFile, writeFile, BaseDirectory, mkdir, create } from '@tauri-apps/plugin-fs';
+import { readTextFile, writeFile, BaseDirectory } from '@tauri-apps/plugin-fs';
 import { error } from '@tauri-apps/plugin-log';
 
-export class FileSystemError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'FileSystemError';
-  }
+export async function openFile(): Promise<string> {
+  return await invoke<string>('open_file');
 }
 
-export interface FileSystemService {
-  openFile: () => Promise<string>;
-  readFile: (path: string) => Promise<string>;
-  saveFile: (path: string, content: string) => Promise<void>;
-  loadConfigFile: (filename: string) => Promise<string>;
+export async function readFile(path: string): Promise<string> {
+  return await invoke<string>('read_file', { path });
 }
 
-class FileSystemServiceImpl implements FileSystemService {
-  async openFile(): Promise<string> {
-    try {
-      return await invoke<string>('open_file');
-    } catch (error) {
-      throw new FileSystemError(error instanceof Error ? error.message : String(error));
-    }
-  }
-
-  async readFile(path: string): Promise<string> {
-    try {
-      return await invoke<string>('read_file', { path });
-    } catch (error) {
-      throw new FileSystemError(error instanceof Error ? error.message : String(error));
-    }
-  }
-
-  async saveFile(path: string, content: string): Promise<void> {
-    try {
-      await invoke('save_file', { path, content });
-    } catch (error) {
-      throw new FileSystemError(error instanceof Error ? error.message : String(error));
-    }
-  }
-
-  async loadConfigFile(filename: string): Promise<string> {
-    try {
-      // Always load from AppConfig directory
-      return await readTextFile(filename, { baseDir: BaseDirectory.AppConfig });
-    } catch (error) {
-      throw new FileSystemError(`Failed to load config file '${filename}' from AppConfig: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  }
+export async function saveFile(path: string, content: string): Promise<void> {
+  await invoke('save_file', { path, content });
 }
 
-export const fileSystemService: FileSystemService = new FileSystemServiceImpl();
+export async function loadConfigFile(filename: string): Promise<string> {
+  // Always load from AppConfig directory
+  return await readTextFile(filename, { baseDir: BaseDirectory.AppConfig });
+}
+
+// Fetch a list of files for the file selector modal
+// The backend should provide a 'list_files' command that returns [{ name, path }]
+export async function fetchFiles(): Promise<{ name: string; path: string }[]> {
+  return await invoke<{ name: string; path: string }[]>('list_files');
+}
 
 // --- VSCode-like Settings Registry ---
 

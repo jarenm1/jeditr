@@ -39,10 +39,24 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice, [], [], Workspac
     }));
   },
   removeWorkspace: (workspaceId) => {
-    set(state => ({
-      workspaces: state.workspaces.filter(ws => ws.id !== workspaceId),
-      activeWorkspaceId: state.activeWorkspaceId === workspaceId ? null : state.activeWorkspaceId,
-    }));
+    set(state => {
+      const idx = state.workspaces.findIndex(ws => ws.id === workspaceId);
+      const filtered = state.workspaces.filter(ws => ws.id !== workspaceId);
+      let newActive = state.activeWorkspaceId;
+      if (state.activeWorkspaceId === workspaceId) {
+        if (filtered.length === 0) {
+          newActive = null;
+        } else if (idx > 0) {
+          newActive = filtered[idx - 1].id;
+        } else {
+          newActive = filtered[0].id;
+        }
+      }
+      return {
+        workspaces: filtered,
+        activeWorkspaceId: newActive,
+      };
+    });
   },
   setActiveWorkspace: (workspaceId) => {
     set({ activeWorkspaceId: workspaceId });

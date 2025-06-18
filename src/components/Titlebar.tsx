@@ -1,31 +1,41 @@
 import React from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import { useEditorStore } from '@editor/editorStore/index';
 
 interface TitlebarProps {
   currentFileName: string;
   isDirty: boolean;
-  onOpen: () => void;
-  onSave: () => void;
 }
 
-const Titlebar: React.FC<TitlebarProps> = ({ currentFileName, isDirty, onOpen, onSave }) => {
+const Titlebar: React.FC<TitlebarProps> = ({ currentFileName, isDirty }) => {
   const handleMinimize = () => getCurrentWindow().minimize();
   const handleMaximize = () => getCurrentWindow().toggleMaximize();
   const handleClose = () => getCurrentWindow().close();
 
+  const { workspaces, activeWorkspaceId, setActiveWorkspace } = useEditorStore();
+
   return (
     <div className="h-10 w-full flex items-center select-none border-b border-[var(--color-secondary)] px-2 relative">
-      {/* Left: Open/Save */}
-      <div className="flex gap-2 flex-shrink-0 z-10" style={{ WebkitAppRegion: 'no-drag' } as any}>
-        <button onClick={onOpen} className="px-3 py-1 rounded bg-[var(--color-secondary)] text-[var(--color-fg)] hover:bg-[var(--color-tertiary)] text-xs">Open</button>
-        <button onClick={onSave} className="px-3 py-1 rounded bg-[var(--color-primary)] text-[var(--color-fg)] hover:bg-[var(--color-accent)] text-xs">Save</button>
+      {/* Left: Workspace Switcher */}
+      <div className="flex gap-2 flex-shrink-0 z-10 pointer-events-auto" style={{ WebkitAppRegion: 'no-drag' } as any}>
+        {workspaces.map((ws, idx) => (
+          <button
+            key={ws.id}
+            onClick={e => { e.stopPropagation(); setActiveWorkspace(ws.id); }}
+            className={`px-2 py-1 rounded text-xs font-mono transition-colors ${ws.id === activeWorkspaceId ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+            style={{ minWidth: 28 }}
+          >
+            {idx + 1}
+          </button>
+        ))}
       </div>
       {/* Drag Region (center, flex-1) */}
-      <div className="flex-1 h-full titlebar-drag-region" style={{ WebkitAppRegion: 'drag' } as any} />
+      <div className="flex-1 h-full titlebar-drag-region flex items-center justify-center" style={{ WebkitAppRegion: 'drag' } as any} />
       {/* Center: Title (absolutely centered, pointer-events-none) */}
       <div className="absolute left-0 right-0 top-0 h-full flex items-center justify-center pointer-events-none">
         <div className="text-[var(--color-fg)] font-mono text-sm truncate pointer-events-auto">
-          {currentFileName}{isDirty ? ' *' : ''}
+          {/* Placeholder for current file name */}
+          {currentFileName || 'No file selected'}{isDirty ? ' *' : ''}
         </div>
       </div>
       {/* Right: Window Buttons */}

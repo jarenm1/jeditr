@@ -6,9 +6,9 @@ const VimBar: React.FC = () => {
   const { mode, command, message } = useVimStore();
   return (
     <>
-      <span className="mr-4 text-yellow-400">{mode.toUpperCase()}</span>
-      <span className="mr-4 text-blue-400">{command}</span>
-      <span className="text-green-400">{message}</span>
+      <span className="mr-4 text-[var(--color-primary)]">{mode.toUpperCase()}</span>
+      <span className="mr-4 text-[var(--color-primary)]">{command}</span>
+      <span className="text-[var(--color-primary)]">{message}</span>
     </>
   );
 };

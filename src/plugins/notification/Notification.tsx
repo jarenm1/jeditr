@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNotificationStore, removeNotification } from '@plugins/notificationStore';
+import { useNotificationStore, removeNotification } from '@plugins/notification/notificationStore';
 
 const severityIcon = {
   info: (
@@ -63,10 +63,10 @@ export const NotificationModal: React.FC = () => {
         );
       })}
       {hiddenCount > 0 && (
-        <div className="flex items-center mt-2 bg-gray-900 bg-opacity-80 rounded px-3 py-2 text-xs text-gray-200 min-w-[300px] max-w-md">
+        <div className="flex items-center mt-2 bg-[var(--color-secondary)] bg-opacity-80 rounded px-3 py-2 text-xs text-gray-200 min-w-[300px] max-w-md">
           <span className="flex-1">+{hiddenCount} more notifications</span>
           <button
-            className="ml-4 px-2 py-1 rounded bg-gray-700 hover:bg-gray-600 text-xs text-white"
+            className="ml-4 px-2 py-1 rounded bg-[var(--color-primary)] hover:bg-[var(--color-tertiary)] text-xs text-white"
             onClick={handleClearAll}
           >
             Clear All

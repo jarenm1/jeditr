@@ -1,5 +1,5 @@
-
 import React from 'react';
+import "@editor/registerEditorContentType";
 
 export type ContentRenderer = React.FC<{ content: any; editorSettings: any }>;
 

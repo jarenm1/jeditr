@@ -62,6 +62,7 @@
         }
       ]
     },
-    "log:default"
+    "log:default",
+    "fs:default"
   ]
 }
