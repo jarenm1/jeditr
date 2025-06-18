@@ -52,6 +52,28 @@ function isKeybindPressed(keys: string[], pressed: Set<string>): boolean {
   return keys.every(k => pressed.has(k));
 }
 
+/**
+ * Registers a global keybind.
+ *
+ * This function adds a keybind to the global keybind store, allowing you to define custom keyboard shortcuts
+ * for your application. The keybind will be checked on every keyup event, and if the specified keys are pressed,
+ * the provided handler will be executed.
+ *
+ * Usage:
+ * ```js
+ *   registerKeybind({
+ *     id: 'my-action',
+ *     keys: ['Ctrl', 'K'],
+ *     description: 'Do something cool',
+ *     handler: () => { ... }
+ *   });
+ *```
+ * @param bind - A Keybind object with the following properties:
+ *   - id: Unique string identifier for the keybind
+ *   - keys: Array of key strings (e.g., ['Ctrl', 'N'])
+ *   - description: (optional) Description of the keybind
+ *   - handler: Function to execute when the keybind is triggered
+ */
 export function registerKeybind(bind: Keybind) {
   useKeybindStore.getState().registerKeybind(bind);
 }

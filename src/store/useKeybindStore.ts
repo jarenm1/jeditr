@@ -15,23 +15,32 @@ interface KeybindStore {
   getKeybindById: (id: string) => Keybind | undefined;
 }
 
-export const useKeybindStore = create<KeybindStore>((set, get) => ({
-  keybinds: [],
-  registerKeybind: (bind) => set(state => {
-    // Replace if exists, else add
-    const existing = state.keybinds.find(k => k.id === bind.id);
-    if (existing) {
-      return {
-        keybinds: state.keybinds.map(k => k.id === bind.id ? bind : k),
-      };
-    }
-    return { keybinds: [...state.keybinds, bind] };
-  }),
-  unregisterKeybind: (id) => set(state => ({
-    keybinds: state.keybinds.filter(k => k.id !== id),
-  })),
-  updateKeybind: (id, update) => set(state => ({
-    keybinds: state.keybinds.map(k => k.id === id ? { ...k, ...update } : k),
-  })),
-  getKeybindById: (id) => get().keybinds.find(k => k.id === id),
-})); 
+// Internal type for fast lookup
+type KeybindMap = Record<string, Keybind>;
+
+export const useKeybindStore = create<KeybindStore>((set, get) => {
+  // Internal state: keybinds as a map
+  let keybindMap: KeybindMap = {};
+
+  const syncArray = () => Object.values(keybindMap);
+
+  return {
+    keybinds: [],
+    registerKeybind: (bind) => set(state => {
+      keybindMap = { ...keybindMap, [bind.id]: bind };
+      return { keybinds: syncArray() };
+    }),
+    unregisterKeybind: (id) => set(state => {
+      const { [id]: _, ...rest } = keybindMap;
+      keybindMap = rest;
+      return { keybinds: syncArray() };
+    }),
+    updateKeybind: (id, update) => set(state => {
+      if (keybindMap[id]) {
+        keybindMap = { ...keybindMap, [id]: { ...keybindMap[id], ...update } };
+      }
+      return { keybinds: syncArray() };
+    }),
+    getKeybindById: (id) => keybindMap[id],
+  };
+}); 
