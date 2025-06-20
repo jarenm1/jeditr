@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { EditorView, keymap } from '@codemirror/view';
-import { EditorState } from '@codemirror/state';
+import { EditorState, StateEffect } from '@codemirror/state';
 import { useVimStore } from '@ubar/ubarStore/vimStore';
 import { coreExtensions } from './editorStore/codemirrorExtensions';
 import { defaultKeymap } from '@codemirror/commands';
@@ -19,12 +19,12 @@ export const CodeMirrorEditor: React.FC<import('./MonacoEditor').EditorProps> = 
   const viewRef = useRef<EditorView | null>(null);
   const { setMode } = useVimStore();
 
-  // Create or update the editor
+  // Create the editor only once on mount
   useEffect(() => {
     if (!editorRef.current) return;
     if (viewRef.current) return;
 
-    // Build extensions
+    // Build initial extensions (without settings-dependent themes)
     const extensions = [
       ...coreExtensions,
       EditorView.lineWrapping,
@@ -36,30 +36,6 @@ export const CodeMirrorEditor: React.FC<import('./MonacoEditor').EditorProps> = 
       }),
       whiteCursorTheme,
     ];
-    if (settings?.vimMode) {
-      extensions.push(
-        EditorView.domEventHandlers({
-          // Listen for Vim mode changes
-          focus: () => setMode('normal'),
-        })
-      );
-    }
-    if (settings?.fontSize) {
-      extensions.push(EditorView.theme({
-        '&': { fontSize: settings.fontSize + 'px' },
-      }));
-    }
-    if (settings?.fontFamily) {
-      extensions.push(EditorView.theme({
-        '&': { fontFamily: settings.fontFamily },
-      }));
-    }
-    if (settings?.lineHeight) {
-      extensions.push(EditorView.theme({
-        '&': { lineHeight: settings.lineHeight },
-      }));
-    }
-
     // Create the editor view
     viewRef.current = new EditorView({
       state: EditorState.create({
@@ -73,7 +49,45 @@ export const CodeMirrorEditor: React.FC<import('./MonacoEditor').EditorProps> = 
       viewRef.current?.destroy();
       viewRef.current = null;
     };
-  }, [editorRef, settings]);
+  }, [editorRef]);
+
+  // Update settings (theme, font, etc) dynamically
+  useEffect(() => {
+    if (!viewRef.current) return;
+    const themeSpecs: Record<string, any> = {};
+    if (settings?.fontSize) {
+      themeSpecs['fontSize'] = settings.fontSize + 'px';
+    }
+    if (settings?.fontFamily) {
+      themeSpecs['fontFamily'] = settings.fontFamily;
+    }
+    if (settings?.lineHeight) {
+      themeSpecs['lineHeight'] = settings.lineHeight;
+    }
+    // Build extensions array
+    const extensions = [
+      ...coreExtensions,
+      EditorView.lineWrapping,
+      keymap.of(defaultKeymap),
+      EditorView.updateListener.of((v) => {
+        if (v.docChanged) {
+          onChange(v.state.doc.toString());
+        }
+      }),
+      whiteCursorTheme,
+    ];
+    if (Object.keys(themeSpecs).length > 0) {
+      extensions.push(EditorView.theme({ '&': themeSpecs }));
+    }
+    if (settings?.vimMode) {
+      extensions.push(EditorView.domEventHandlers({
+        focus: () => setMode('normal'),
+      }));
+    }
+    viewRef.current.dispatch({
+      effects: [StateEffect.reconfigure.of(extensions)],
+    });
+  }, [settings, setMode, onChange]);
 
   // Update content if prop changes
   useEffect(() => {

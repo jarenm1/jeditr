@@ -83,7 +83,18 @@ export const Editor: React.FC<EditorProps> = ({ content, language = 'plaintext',
                 }
             };
         }
-    }, [themeReady, settings?.fontSize, settings?.fontFamily, settings?.lineHeight, settings?.theme]);
+    }, [settings?.fontSize, settings?.fontFamily, settings?.lineHeight, settings?.theme]);
+
+    useEffect(() => {
+        if (editorInstance.current) {
+            editorInstance.current.updateOptions({
+                fontSize: settings?.fontSize || 14,
+                fontFamily: settings?.fontFamily,
+                lineHeight: settings?.lineHeight,
+            });
+        }
+    }, [settings]);
+
 
     // 4. Update editor value if content prop changes (external update)
     useEffect(() => {

@@ -63,6 +63,7 @@
       ]
     },
     "log:default",
-    "fs:default"
+    "fs:default",
+    "shell:default"
   ]
 }

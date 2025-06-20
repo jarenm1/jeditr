@@ -1,11 +1,11 @@
+use eyre::{Context, Result};
 use serde::Serialize;
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::Path;
 use std::process::Command;
-use walkdir::WalkDir;
-use eyre::{Context, Result};
 use tauri_plugin_dialog::DialogExt;
+use walkdir::WalkDir;
 
 #[derive(Serialize)]
 pub struct FileMetadata {

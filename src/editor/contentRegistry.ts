@@ -1,5 +1,6 @@
 import React from 'react';
 import "@editor/registerEditorContentType";
+import TerminalContentRenderer from './TerminalContentRenderer';
 
 export type ContentRenderer = React.FC<{ content: any; editorSettings: any }>;
 
@@ -37,4 +38,6 @@ export function registerContentType(type: string, renderer: ContentRenderer) {
 
 export function getContentRenderer(type: string): ContentRenderer | undefined {
   return registry[type];
-} 
+}
+
+registerContentType('terminal', TerminalContentRenderer); 

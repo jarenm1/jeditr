@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNotificationStore, removeNotification } from '@plugins/notification/notificationStore';
+import React, { useEffect, useRef } from 'react';
+import { useNotificationStore, removeNotification, setFocusedNotification, focusNextNotification, focusPreviousNotification, executeAction } from '@plugins/notification/notificationStore';
 
 const severityIcon = {
   info: (
@@ -23,8 +23,75 @@ const severityIcon = {
   ),
 };
 
+interface NotificationItemProps {
+  notification: any;
+  isFocused: boolean;
+  onFocus: () => void;
+  onKeyDown: (e: React.KeyboardEvent) => void;
+}
+
+const NotificationItem: React.FC<NotificationItemProps> = ({ notification, isFocused, onFocus, onKeyDown }) => {
+  const notifId = notification.id;
+  const itemRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-focus the element when it becomes focused
+  useEffect(() => {
+    if (isFocused && itemRef.current) {
+      itemRef.current?.focus();
+    }
+  }, [isFocused]);
+  
+  return (
+    <div
+      ref={itemRef}
+      tabIndex={0}
+      onFocus={onFocus}
+      onKeyDown={onKeyDown}
+      style={{
+        background: 'var(--color-secondary)',
+        color: 'var(--color-fg)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+        outline: isFocused ? '2px solid var(--color-primary)' : 'none',
+        outlineOffset: '2px',
+      }}
+      className="p-2 rounded flex flex-col min-w-[300px] max-w-md transition-all duration-300 ease-in-out opacity-100 translate-y-0 animate-fadein"
+      role="alert"
+      aria-label={`${notification.severity || 'info'} notification from ${notification.pluginName}`}
+    >
+      <div className="flex items-center mb-0.5">
+        {severityIcon[notification.severity as keyof typeof severityIcon] || severityIcon.info}
+        <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-fg)' }}>{notification.pluginName}</span>
+        <button
+          className="ml-auto text-gray-400 hover:text-white text-base leading-none"
+          onClick={() => removeNotification(notifId)}
+          aria-label="Close notification"
+          style={{ color: 'var(--color-fg)' }}
+        >
+          ×
+        </button>
+      </div>
+      <span className="text-xs break-words mt-0.5" style={{ color: 'var(--color-fg)' }}>{notification.message}</span>
+      {notification.action && (
+        <div className="mt-2 flex justify-end">
+          <button
+            className="px-3 py-1 text-xs rounded bg-[var(--color-primary)] hover:bg-[var(--color-tertiary)] text-white transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              executeAction(notification.action!.actionId);
+            }}
+            aria-label={`Action: ${notification.action.label}`}
+          >
+            {notification.action.label}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const NotificationModal: React.FC = () => {
   const notifications = useNotificationStore((s) => s.notifications);
+  const focusedNotificationId = useNotificationStore((s) => s.focusedNotificationId);
   const visible = notifications.slice(0, 3);
   const hiddenCount = notifications.length - visible.length;
 
@@ -32,36 +99,74 @@ export const NotificationModal: React.FC = () => {
     notifications.forEach(n => removeNotification(n.id));
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent, notificationId: string) => {
+    const notification = notifications.find(n => n.id === notificationId);
+    
+    switch (e.key) {
+      case 'q':
+      case 'Q':
+        e.preventDefault();
+        removeNotification(notificationId);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (notification?.action) {
+          executeAction(notification.action.actionId);
+        }
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        focusNextNotification();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        focusPreviousNotification();
+        break;
+      case 'Home':
+        e.preventDefault();
+        useNotificationStore.getState().focusFirstNotification();
+        break;
+      case 'End':
+        e.preventDefault();
+        useNotificationStore.getState().focusLastNotification();
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setFocusedNotification(null);
+        break;
+    }
+  };
+
+  const handleFocus = (notificationId: string) => {
+    setFocusedNotification(notificationId);
+  };
+
+  // Focus the first notification when notifications appear
+  useEffect(() => {
+    if (notifications.length > 0 && !focusedNotificationId) {
+      setFocusedNotification(notifications[0].id);
+    }
+  }, [notifications.length, focusedNotificationId]);
+
+  if (notifications.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="fixed left-4 bottom-12 z-50 flex flex-col items-start space-y-1">
-      {visible.map(n => {
-        const notifId = n.id;
-        return (
-          <div
-            key={notifId}
-            style={{
-              background: 'var(--color-secondary)',
-              color: 'var(--color-fg)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
-            }}
-            className="p-2 rounded flex flex-col min-w-[300px] max-w-md transition-all duration-300 ease-in-out opacity-100 translate-y-0 animate-fadein"
-          >
-            <div className="flex items-center mb-0.5">
-              {severityIcon[n.severity || 'info']}
-              <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-fg)' }}>{n.pluginName}</span>
-              <button
-                className="ml-auto text-gray-400 hover:text-white text-base leading-none"
-                onClick={() => removeNotification(notifId)}
-                aria-label="Close notification"
-                style={{ color: 'var(--color-fg)' }}
-              >
-                ×
-              </button>
-            </div>
-            <span className="text-xs break-words mt-0.5" style={{ color: 'var(--color-fg)' }}>{n.message}</span>
-          </div>
-        );
-      })}
+    <div 
+      className="fixed left-4 bottom-12 z-50 flex flex-col items-start space-y-1"
+      role="region"
+      aria-label="Notifications"
+    >
+      {visible.map(n => (
+        <NotificationItem
+          key={n.id}
+          notification={n}
+          isFocused={focusedNotificationId === n.id}
+          onFocus={() => handleFocus(n.id)}
+          onKeyDown={(e) => handleKeyDown(e, n.id)}
+        />
+      ))}
       {hiddenCount > 0 && (
         <div className="flex items-center mt-2 bg-[var(--color-secondary)] bg-opacity-80 rounded px-3 py-2 text-xs text-gray-200 min-w-[300px] max-w-md">
           <span className="flex-1">+{hiddenCount} more notifications</span>

@@ -21,9 +21,11 @@ interface ModalState {
   removeModal: (id: string) => void;
   updateModalPosition: (id: string, position: ModalPosition) => void;
   hideModal: (id: string) => void;
+  findModalByPlugin: (pluginName: string) => PluginModal | undefined;
+  closeModalByPlugin: (pluginName: string) => void;
 }
 
-export const useModalStore = create<ModalState>((set) => ({
+export const useModalStore = create<ModalState>((set, get) => ({
   modals: [],
   addModal: ({ pluginName, content }) => {
     const id = nanoid();
@@ -60,6 +62,17 @@ export const useModalStore = create<ModalState>((set) => ({
       ),
     }));
   },
+  findModalByPlugin: (pluginName) => {
+    const state = get();
+    return state.modals.find((m) => m.pluginName === pluginName && m.visible);
+  },
+  closeModalByPlugin: (pluginName) => {
+    set((state) => ({
+      modals: state.modals.map((m) =>
+        m.pluginName === pluginName && m.visible ? { ...m, visible: false } : m
+      ),
+    }));
+  },
 }));
 
 export const addModal = (modal: { pluginName: string; content: React.ReactNode }) =>
@@ -70,6 +83,10 @@ export const updateModalPosition = (id: string, position: ModalPosition) =>
   useModalStore.getState().updateModalPosition(id, position);
 export const hideModal = (id: string) =>
   useModalStore.getState().hideModal(id);
+export const findModalByPlugin = (pluginName: string) =>
+  useModalStore.getState().findModalByPlugin(pluginName);
+export const closeModalByPlugin = (pluginName: string) =>
+  useModalStore.getState().closeModalByPlugin(pluginName);
 
 
 

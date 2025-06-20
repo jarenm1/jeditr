@@ -14,6 +14,8 @@ import { readFile, saveFile } from "@services/fileSystem";
 import { nanoid } from "nanoid";
 import { detectLanguage } from "@language/registry";
 import { PluginModals } from '@plugins/modal/PluginModals';
+import { focusFirstNotification } from '@plugins/notification/notificationStore';
+import { useNotificationStore } from '@plugins/notification/notificationStore';
 
 function App() {
   const { editorSettings, vimEnabled, workspaces, activeWorkspaceId, addPaneToWorkspace } = useEditorStore();
@@ -81,6 +83,69 @@ function App() {
     });
     return () => {
       unregisterKeybind('file.save');
+    };
+  }, []);
+
+  // Register terminal keybind ONCE
+  useEffect(() => {
+    registerKeybind({
+      id: 'terminal.open',
+      keys: ['Ctrl', 'T'],
+      description: 'Open a new terminal',
+      handler: () => {
+        const contentId = `terminal-${nanoid()}`;
+        const pane = {
+          id: `pane-${nanoid()}`,
+          contentId,
+        };
+        if (activeWorkspaceId) {
+          addPaneToWorkspace(activeWorkspaceId, pane);
+        }
+        setContentMap(prev => ({
+          ...prev,
+          [contentId]: {
+            id: contentId,
+            type: 'terminal',
+            data: {
+              initialText: '', // Optionally set initial text
+            },
+          },
+        }));
+      },
+    });
+    return () => {
+      unregisterKeybind('terminal.open');
+    };
+  }, [activeWorkspaceId, addPaneToWorkspace]);
+
+  // Register notification focus keybind
+  useEffect(() => {
+    registerKeybind({
+      id: 'notification.focus',
+      keys: ['Ctrl', 'Shift', 'N'],
+      description: 'Focus notification area',
+      handler: () => {
+        focusFirstNotification();
+      },
+    });
+    return () => {
+      unregisterKeybind('notification.focus');
+    };
+  }, []);
+
+  // Register notification clear all keybind
+  useEffect(() => {
+    registerKeybind({
+      id: 'notification.clearAll',
+      keys: ['Ctrl', 'Shift', 'C'],
+      description: 'Clear all notifications',
+      handler: () => {
+        const notifications = useNotificationStore.getState().notifications;
+        notifications.forEach(n => useNotificationStore.getState().removeNotification(n.id));
+      },
+    });
+    return () => {
+      unregisterKeybind('notification.clearAll');
     };
   }, []);
 

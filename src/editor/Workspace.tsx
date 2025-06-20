@@ -19,33 +19,8 @@ interface WorkspaceProps {
  */
 export const Workspace: React.FC<WorkspaceProps> = ({ workspace, editorSettings, contentMap }) => {
   useEffect(() => {
-    // Register "new workspace" keybind
-    registerKeybind({
-      id: 'workspace.new',
-      keys: ['Ctrl', 'N'],
-      description: 'Open a new workspace',
-      handler: () => {
-        const { workspaces, addWorkspace } = useEditorStore.getState() as any;
-        const nextNum = workspaces.length + 1;
-        addWorkspace(`Workspace ${nextNum}`);
-      },
-    });
 
-    // Register "next workspace" keybind
-    registerKeybind({
-      id: 'workspace.next',
-      keys: ['Ctrl', 'Tab'],
-      description: 'Switch to next workspace',
-      handler: () => {
-        const { workspaces, activeWorkspaceId, setActiveWorkspace } = useEditorStore.getState() as any;
-        if (workspaces.length === 0) return;
-        const idx = workspaces.findIndex((ws: EditorWorkspace) => ws.id === activeWorkspaceId);
-        const nextIdx = (idx + 1) % workspaces.length;
-        setActiveWorkspace(workspaces[nextIdx].id);
-      },
-    });
-
-    // Register "close pane" keybind (Ctrl+Q)
+    // Registered in component because it is only needed when component is mounted.
     registerKeybind({
       id: 'pane.close',
       keys: ['Ctrl', 'Q'],
@@ -72,8 +47,6 @@ export const Workspace: React.FC<WorkspaceProps> = ({ workspace, editorSettings,
 
     // Cleanup on unmount
     return () => {
-      unregisterKeybind('workspace.new');
-      unregisterKeybind('workspace.next');
       unregisterKeybind('pane.close');
     };
   }, []);

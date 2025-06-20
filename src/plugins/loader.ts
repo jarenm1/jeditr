@@ -1,4 +1,6 @@
 import { showNotification, showModal } from './api';
+import { registerPluginKeybindWithAction } from './registerKeybind';
+import { registerActionHandler } from './notification/notificationStore';
 
 /**
  * Interface for plugin configuration.
@@ -41,11 +43,33 @@ export function loadPluginInWorker(plugin: PluginConfig) {
   worker.onmessage = (event) => {
     const { type, payload } = event.data;
     if (type === 'showNotification') {
-      showNotification(plugin.name, payload.message, payload.severity);
+      showNotification(plugin.name, payload.message, payload.severity, payload.action);
+      
+      // Register action handler if action is provided
+      if (payload.action?.actionId) {
+        registerActionHandler(payload.action.actionId, () => {
+          // Send action execution message back to the plugin
+          worker.postMessage({
+            type: 'executeAction',
+            actionId: payload.action.actionId
+          });
+        });
+      }
     }
     if (type === 'showModal') {
       // For now, treat payload.content as a string or simple HTML
       showModal(plugin.name, payload.content);
+    }
+    // Handle plugin keybind registration
+    if (type === 'registerKeybind') {
+      const { id, keys, description, action } = payload;
+      registerPluginKeybindWithAction({
+        id,
+        keys,
+        description,
+        action,
+        pluginWorker: worker,
+      });
     }
     // Add more API message handling here as needed
   };
