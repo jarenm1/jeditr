@@ -5,7 +5,7 @@ import Titlebar from "@components/Titlebar";
 import React, { useEffect, useState, useRef } from "react";
 import { BottomBar } from "@ubar/BottomBar";
 import { DEFAULT_EDITOR_SETTINGS } from "@editor/editorStore/settings";
-import { NotificationModal } from "@plugins/notification/Notification";
+import { NotificationModal } from "@plugins/api/notification/Notification";
 import { loadAllPlugins } from "@plugins/loader";
 import "@services/keybinds";
 import { registerKeybind, unregisterKeybind } from "@services/keybinds";
@@ -13,9 +13,9 @@ import { FileSelector } from "@components/FileSelector";
 import { readFile, saveFile } from "@services/fileSystem";
 import { nanoid } from "nanoid";
 import { detectLanguage } from "@language/registry";
-import { PluginModals } from '@plugins/modal/PluginModals';
-import { focusFirstNotification } from '@plugins/notification/notificationStore';
-import { useNotificationStore } from '@plugins/notification/notificationStore';
+import { PluginModals } from '@plugins/api/modal/PluginModals';
+import { focusFirstNotification } from '@plugins/api/notification/notificationStore';
+import { useNotificationStore } from '@plugins/api/notification/notificationStore';
 
 function App() {
   const { editorSettings, vimEnabled, workspaces, activeWorkspaceId, addPaneToWorkspace } = useEditorStore();

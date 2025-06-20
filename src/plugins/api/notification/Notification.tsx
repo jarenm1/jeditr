@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useNotificationStore, removeNotification, setFocusedNotification, focusNextNotification, focusPreviousNotification, executeAction } from '@plugins/notification/notificationStore';
+import { useNotificationStore, removeNotification, setFocusedNotification, focusNextNotification, focusPreviousNotification, executeAction } from '@plugins/api/notification/notificationStore';
 
 const severityIcon = {
   info: (

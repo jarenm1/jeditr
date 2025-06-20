@@ -1,6 +1,6 @@
 import { showNotification, showModal } from './api';
-import { registerPluginKeybindWithAction } from './registerKeybind';
-import { registerActionHandler } from './notification/notificationStore';
+import { registerPluginKeybindWithAction } from './api/registerKeybind';
+import { registerActionHandler } from './api/notification/notificationStore';
 
 /**
  * Interface for plugin configuration.
