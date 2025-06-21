@@ -2,21 +2,21 @@
 
 import { create } from "zustand";
 import {
-	createWorkspaceSlice,
-	WorkspaceSlice,
+  createWorkspaceSlice,
+  WorkspaceSlice,
 } from "@editor/editorStore/workspace";
 import { createPaneSlice, PaneSlice } from "@editor/editorStore/pane";
 import {
-	createSettingsSlice,
-	SettingsSlice,
+  createSettingsSlice,
+  SettingsSlice,
 } from "@editor/editorStore/settings";
 import { createVimSlice, VimSlice } from "@editor/editorStore/vim";
 
 export const useEditorStore = create<
-	WorkspaceSlice & PaneSlice & SettingsSlice & VimSlice
+  WorkspaceSlice & PaneSlice & SettingsSlice & VimSlice
 >((...a) => ({
-	...createWorkspaceSlice(...a),
-	...createPaneSlice(...a),
-	...createSettingsSlice(...a),
-	...createVimSlice(...a),
+  ...createWorkspaceSlice(...a),
+  ...createPaneSlice(...a),
+  ...createSettingsSlice(...a),
+  ...createVimSlice(...a),
 }));

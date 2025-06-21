@@ -13,38 +13,38 @@ import { nanoid } from "nanoid";
  * This slice manages the state and actions related to layout panes, such as adding, removing, and switching panes.
  */
 export interface EditorPane {
-	id: string;
-	contentId: string;
+  id: string;
+  contentId: string;
 }
 
 export interface PaneSlice {
-	panes: EditorPane[];
-	addPane: (contentId: string) => void;
-	removePane: (paneId: string) => void;
-	setPaneContent: (paneId: string, contentId: string) => void;
+  panes: EditorPane[];
+  addPane: (contentId: string) => void;
+  removePane: (paneId: string) => void;
+  setPaneContent: (paneId: string, contentId: string) => void;
 }
 
 export const createPaneSlice: StateCreator<PaneSlice, [], [], PaneSlice> = (
-	set,
-	get,
+  set,
+  get,
 ) => ({
-	panes: [],
-	addPane: (contentId) => {
-		const newId = `pane-${nanoid()}`;
-		set((state) => ({
-			panes: [...state.panes, { id: newId, contentId }],
-		}));
-	},
-	removePane: (paneId) => {
-		set((state) => ({
-			panes: state.panes.filter((pane) => pane.id !== paneId),
-		}));
-	},
-	setPaneContent: (paneId, contentId) => {
-		set((state) => ({
-			panes: state.panes.map((pane) =>
-				pane.id === paneId ? { ...pane, contentId } : pane,
-			),
-		}));
-	},
+  panes: [],
+  addPane: (contentId) => {
+    const newId = `pane-${nanoid()}`;
+    set((state) => ({
+      panes: [...state.panes, { id: newId, contentId }],
+    }));
+  },
+  removePane: (paneId) => {
+    set((state) => ({
+      panes: state.panes.filter((pane) => pane.id !== paneId),
+    }));
+  },
+  setPaneContent: (paneId, contentId) => {
+    set((state) => ({
+      panes: state.panes.map((pane) =>
+        pane.id === paneId ? { ...pane, contentId } : pane,
+      ),
+    }));
+  },
 });

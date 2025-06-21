@@ -35,16 +35,16 @@ import type { NotificationAction } from "./notificationStore";
  *   this actionId when the button is clicked or Enter is pressed.
  */
 export function showNotification(
-	pluginName: string,
-	message: string,
-	severity: "info" | "warning" | "error" = "info",
-	action?: NotificationAction,
+  pluginName: string,
+  message: string,
+  severity: "info" | "warning" | "error" = "info",
+  action?: NotificationAction,
 ) {
-	addNotification({
-		pluginName,
-		message,
-		timestamp: Date.now(),
-		severity,
-		action,
-	});
+  addNotification({
+    pluginName,
+    message,
+    timestamp: Date.now(),
+    severity,
+    action,
+  });
 }

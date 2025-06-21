@@ -4,14 +4,14 @@ import { getContentRenderer } from "@editor/contentRegistry";
 
 // Define the shape of content for rendering
 export interface Content {
-	id: string;
-	type: string;
-	data: any; // The shape of data depends on the content type/renderer
+  id: string;
+  type: string;
+  data: any; // The shape of data depends on the content type/renderer
 }
 
 interface EditorPaneProps {
-	content: Content;
-	editorSettings: EditorSettings;
+  content: Content;
+  editorSettings: EditorSettings;
 }
 
 /**
@@ -32,16 +32,16 @@ interface EditorPaneProps {
  * This design allows for easy extension: new content types can be registered at runtime via the registry.
  */
 export const EditorPane: React.FC<EditorPaneProps> = ({
-	content,
-	editorSettings,
+  content,
+  editorSettings,
 }) => {
-	const Renderer = getContentRenderer(content.type);
-	if (Renderer) {
-		return <Renderer content={content} editorSettings={editorSettings} />;
-	}
-	return (
-		<div className="flex items-center justify-center h-full text-gray-400">
-			Unknown content type: {content.type}
-		</div>
-	);
+  const Renderer = getContentRenderer(content.type);
+  if (Renderer) {
+    return <Renderer content={content} editorSettings={editorSettings} />;
+  }
+  return (
+    <div className="flex items-center justify-center h-full text-gray-400">
+      Unknown content type: {content.type}
+    </div>
+  );
 };

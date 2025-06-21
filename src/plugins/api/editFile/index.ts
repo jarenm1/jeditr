@@ -9,7 +9,7 @@
  * and save the file. It is up to the implementation to determine how to match and replace the content.
  */
 export const editFile = (
-	path: string,
-	oldContent: string,
-	newText: string,
+  path: string,
+  oldContent: string,
+  newText: string,
 ) => {};

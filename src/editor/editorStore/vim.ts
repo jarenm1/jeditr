@@ -6,14 +6,14 @@
 import { StateCreator } from "zustand";
 
 export interface VimSlice {
-	vimEnabled: boolean;
-	setVimEnabled: (enabled: boolean) => void;
+  vimEnabled: boolean;
+  setVimEnabled: (enabled: boolean) => void;
 }
 
 export const createVimSlice: StateCreator<VimSlice, [], [], VimSlice> = (
-	set,
-	get,
+  set,
+  get,
 ) => ({
-	vimEnabled: true,
-	setVimEnabled: (enabled) => set({ vimEnabled: enabled }),
+  vimEnabled: true,
+  setVimEnabled: (enabled) => set({ vimEnabled: enabled }),
 });
