@@ -1,69 +1,67 @@
 {
-  "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
-  "description": "Capability for the main window",
-  "windows": [
-    "main"
-  ],
-  "permissions": [
-    "core:default",
-    "opener:default",
-    "core:window:default",
-    "core:window:allow-start-dragging",
-    "core:window:allow-close",
-    "core:window:allow-toggle-maximize",
-    "core:window:allow-minimize",
-    "dialog:default",
-    {
-      "identifier": "fs:allow-write-text-file",
-      "allow": [
-        {
-          "path": "$APP_CONFIG/**"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-create",
-      "allow": [
-        {
-          "path": "$APP_CONFIG/**"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-read-text-file",
-      "allow": [
-        {
-          "path": "$APP_CONFIG/**"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-watch",
-      "allow": [
-        {
-          "path": "$APP_CONFIG/**"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-read-dir",
-      "allow": [
-        {
-          "path": "$RESOURCE/themes/*"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-watch",
-      "allow": [
-        {
-          "path": "$RESOURCE/themes/*"
-        }
-      ]
-    },
-    "log:default",
-    "fs:default",
-    "shell:default"
-  ]
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "default",
+	"description": "Capability for the main window",
+	"windows": ["main"],
+	"permissions": [
+		"core:default",
+		"opener:default",
+		"core:window:default",
+		"core:window:allow-start-dragging",
+		"core:window:allow-close",
+		"core:window:allow-toggle-maximize",
+		"core:window:allow-minimize",
+		"dialog:default",
+		{
+			"identifier": "fs:allow-write-text-file",
+			"allow": [
+				{
+					"path": "$APP_CONFIG/**"
+				}
+			]
+		},
+		{
+			"identifier": "fs:allow-create",
+			"allow": [
+				{
+					"path": "$APP_CONFIG/**"
+				}
+			]
+		},
+		{
+			"identifier": "fs:allow-read-text-file",
+			"allow": [
+				{
+					"path": "$APP_CONFIG/**"
+				}
+			]
+		},
+		{
+			"identifier": "fs:allow-watch",
+			"allow": [
+				{
+					"path": "$APP_CONFIG/**"
+				}
+			]
+		},
+		{
+			"identifier": "fs:allow-read-dir",
+			"allow": [
+				{
+					"path": "$RESOURCE/themes/*"
+				}
+			]
+		},
+		{
+			"identifier": "fs:allow-watch",
+			"allow": [
+				{
+					"path": "$RESOURCE/themes/*"
+				}
+			]
+		},
+		"log:default",
+		"fs:default",
+		"shell:default"
+	]
 }

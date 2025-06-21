@@ -1,75 +1,75 @@
 {
-  "name": "Solarized Dark",
-  "colors": {
-    "comment": "Base theme colors - solid colors for theme system",
-    "--theme-bg-primary": "#002b36",
-    "--theme-bg-secondary": "#073642",
-    "--theme-bg-tertiary": "#586e75",
-    
-    "--theme-surface-primary": "#002b36",
-    "--theme-surface-secondary": "#073642",
-    "--theme-surface-hover": "#094858",
-    "--theme-surface-active": "#0a5663",
-    
-    "--theme-text-primary": "#839496",
-    "--theme-text-secondary": "#657b83",
-    "--theme-text-tertiary": "#586e75",
-    "--theme-text-disabled": "#4a5759",
-    
-    "--theme-accent-primary": "#268bd2",
-    "--theme-accent-secondary": "#b58900",
-    "--theme-accent-success": "#859900",
-    "--theme-accent-warning": "#cb4b16",
-    "--theme-accent-error": "#dc322f",
-    "--theme-accent-info": "#2aa198",
-    
-    "--theme-border-primary": "#586e75",
-    "--theme-border-secondary": "#4a5759",
-    "--theme-border-tertiary": "#3d4f52",
-    
-    "--theme-button-primary-bg": "#268bd2",
-    "--theme-button-primary-fg": "#fdf6e3",
-    "--theme-button-primary-hover": "#2176c0",
-    "--theme-button-primary-active": "#1e6aab",
-    
-    "--theme-button-secondary-bg": "#073642",
-    "--theme-button-secondary-fg": "#839496",
-    "--theme-button-secondary-hover": "#094858",
-    "--theme-button-secondary-active": "#0a5663",
-    
-    "--theme-button-danger-bg": "#dc322f",
-    "--theme-button-danger-fg": "#fdf6e3",
-    "--theme-button-danger-hover": "#c82e2b",
-    "--theme-button-danger-active": "#b52b28",
-    
-    "--theme-button-success-bg": "#859900",
-    "--theme-button-success-fg": "#fdf6e3",
-    "--theme-button-success-hover": "#738a00",
-    "--theme-button-success-active": "#657a00",
-    
-    "--theme-button-disabled-bg": "#4a5759",
-    "--theme-button-disabled-fg": "#586e75",
-    
-    "comment2": "Application colors with transparency - preserve transparency system",
-    "--color-primary": "rgba(38, 139, 210, 0.4)",
-    "--color-secondary": "rgba(7, 54, 66, 0.4)",
-    "--color-tertiary": "rgba(88, 110, 117, 0.7)",
-    "--color-bg": "rgba(0, 43, 54, 0.8)",
-    "--color-fg": "rgba(131, 148, 150, 0.95)",
-    "--color-info": "rgba(42, 161, 152, 0.85)",
-    "--color-warning": "rgba(203, 75, 22, 0.85)",
-    "--color-danger": "rgba(220, 50, 47, 0.85)",
-    "--color-success": "rgba(133, 153, 0, 0.85)",
-    
-    "--color-editor-bg": "transparent",
-    "--color-titlebar-bg": "rgba(7, 54, 66, 0.4)",
-    "--color-bottombar-bg": "rgba(7, 54, 66, 0.4)",
-    "--color-modal-bg": "rgba(0, 43, 54, 0.95)",
-    "--color-modal-backdrop": "rgba(0, 0, 0, 0.5)",
-    
-    "--color-hover": "rgba(38, 139, 210, 0.1)",
-    "--color-active": "rgba(38, 139, 210, 0.2)",
-    "--color-focus": "rgba(38, 139, 210, 0.3)",
-    "--color-selected": "rgba(38, 139, 210, 0.15)"
-  }
-} 
+	"name": "Solarized Dark",
+	"colors": {
+		"comment": "Base theme colors - solid colors for theme system",
+		"--theme-bg-primary": "#002b36",
+		"--theme-bg-secondary": "#073642",
+		"--theme-bg-tertiary": "#586e75",
+
+		"--theme-surface-primary": "#002b36",
+		"--theme-surface-secondary": "#073642",
+		"--theme-surface-hover": "#094858",
+		"--theme-surface-active": "#0a5663",
+
+		"--theme-text-primary": "#839496",
+		"--theme-text-secondary": "#657b83",
+		"--theme-text-tertiary": "#586e75",
+		"--theme-text-disabled": "#4a5759",
+
+		"--theme-accent-primary": "#268bd2",
+		"--theme-accent-secondary": "#b58900",
+		"--theme-accent-success": "#859900",
+		"--theme-accent-warning": "#cb4b16",
+		"--theme-accent-error": "#dc322f",
+		"--theme-accent-info": "#2aa198",
+
+		"--theme-border-primary": "#586e75",
+		"--theme-border-secondary": "#4a5759",
+		"--theme-border-tertiary": "#3d4f52",
+
+		"--theme-button-primary-bg": "#268bd2",
+		"--theme-button-primary-fg": "#fdf6e3",
+		"--theme-button-primary-hover": "#2176c0",
+		"--theme-button-primary-active": "#1e6aab",
+
+		"--theme-button-secondary-bg": "#073642",
+		"--theme-button-secondary-fg": "#839496",
+		"--theme-button-secondary-hover": "#094858",
+		"--theme-button-secondary-active": "#0a5663",
+
+		"--theme-button-danger-bg": "#dc322f",
+		"--theme-button-danger-fg": "#fdf6e3",
+		"--theme-button-danger-hover": "#c82e2b",
+		"--theme-button-danger-active": "#b52b28",
+
+		"--theme-button-success-bg": "#859900",
+		"--theme-button-success-fg": "#fdf6e3",
+		"--theme-button-success-hover": "#738a00",
+		"--theme-button-success-active": "#657a00",
+
+		"--theme-button-disabled-bg": "#4a5759",
+		"--theme-button-disabled-fg": "#586e75",
+
+		"comment2": "Application colors with transparency - preserve transparency system",
+		"--color-primary": "rgba(38, 139, 210, 0.4)",
+		"--color-secondary": "rgba(7, 54, 66, 0.4)",
+		"--color-tertiary": "rgba(88, 110, 117, 0.7)",
+		"--color-bg": "rgba(0, 43, 54, 0.8)",
+		"--color-fg": "rgba(131, 148, 150, 0.95)",
+		"--color-info": "rgba(42, 161, 152, 0.85)",
+		"--color-warning": "rgba(203, 75, 22, 0.85)",
+		"--color-danger": "rgba(220, 50, 47, 0.85)",
+		"--color-success": "rgba(133, 153, 0, 0.85)",
+
+		"--color-editor-bg": "transparent",
+		"--color-titlebar-bg": "rgba(7, 54, 66, 0.4)",
+		"--color-bottombar-bg": "rgba(7, 54, 66, 0.4)",
+		"--color-modal-bg": "rgba(0, 43, 54, 0.95)",
+		"--color-modal-backdrop": "rgba(0, 0, 0, 0.5)",
+
+		"--color-hover": "rgba(38, 139, 210, 0.1)",
+		"--color-active": "rgba(38, 139, 210, 0.2)",
+		"--color-focus": "rgba(38, 139, 210, 0.3)",
+		"--color-selected": "rgba(38, 139, 210, 0.15)"
+	}
+}

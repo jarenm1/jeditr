@@ -1,31 +1,31 @@
 {
-  "editor.theme": {
-    "base": "vs-dark",
-    "inherit": true,
-    "rules": [
-      { "token": "comment", "foreground": "6A9955" },
-      { "token": "string", "foreground": "CE9178" },
-      { "token": "keyword", "foreground": "569CD6" },
-      { "token": "number", "foreground": "B5CEA8" },
-      { "token": "identifier", "foreground": "D4D4D4" }
-    ],
-    "colors": {
-      "editor.background": "#222222cc",
-      "editor.foreground": "#d4d4d4",
-      "editor.lineHighlightBackground": "#88888880",
-      "editorCursor.foreground": "#d4d4d4",
-      "editor.selectionBackground": "#264f78",
-      "editor.inactiveSelectionBackground": "#3a3d41"
-    }
-  },
-  "editor.themeName": "custom-theme-default-dark",
-  "editor.fontSize": 16,
-  "editor.fontFamily": null,
-  "editor.lineHeight": null,
-  "editor.vimMode": true,
-  "editor.keybindings": {
-    "leader": "<Space>",
-    "fuzzyFinder": ["<leader>", "f"],
-    "fileSearch": ["<leader>", "d"]
-  }
-} 
+	"editor.theme": {
+		"base": "vs-dark",
+		"inherit": true,
+		"rules": [
+			{ "token": "comment", "foreground": "6A9955" },
+			{ "token": "string", "foreground": "CE9178" },
+			{ "token": "keyword", "foreground": "569CD6" },
+			{ "token": "number", "foreground": "B5CEA8" },
+			{ "token": "identifier", "foreground": "D4D4D4" }
+		],
+		"colors": {
+			"editor.background": "#222222cc",
+			"editor.foreground": "#d4d4d4",
+			"editor.lineHighlightBackground": "#88888880",
+			"editorCursor.foreground": "#d4d4d4",
+			"editor.selectionBackground": "#264f78",
+			"editor.inactiveSelectionBackground": "#3a3d41"
+		}
+	},
+	"editor.themeName": "custom-theme-default-dark",
+	"editor.fontSize": 16,
+	"editor.fontFamily": null,
+	"editor.lineHeight": null,
+	"editor.vimMode": true,
+	"editor.keybindings": {
+		"leader": "<Space>",
+		"fuzzyFinder": ["<leader>", "f"],
+		"fileSearch": ["<leader>", "d"]
+	}
+}

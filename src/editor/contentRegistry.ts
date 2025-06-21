@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 import "@editor/registerEditorContentType";
-import TerminalContentRenderer from './TerminalContentRenderer';
+import TerminalContentRenderer from "./TerminalContentRenderer";
 
 export type ContentRenderer = React.FC<{ content: any; editorSettings: any }>;
 
@@ -27,17 +27,17 @@ const registry: Record<string, ContentRenderer> = {};
  * ```
  */
 export function registerContentType(type: string, renderer: ContentRenderer) {
-  if (registry[type]) {
-    console.warn(
-      `[contentRegistry] Content type '${type}' is already registered and will be overwritten. ` +
-      `Consider using namespacing (e.g., 'myplugin.video') to avoid conflicts.`
-    );
-  }
-  registry[type] = renderer;
+	if (registry[type]) {
+		console.warn(
+			`[contentRegistry] Content type '${type}' is already registered and will be overwritten. ` +
+				`Consider using namespacing (e.g., 'myplugin.video') to avoid conflicts.`,
+		);
+	}
+	registry[type] = renderer;
 }
 
 export function getContentRenderer(type: string): ContentRenderer | undefined {
-  return registry[type];
+	return registry[type];
 }
 
-registerContentType('terminal', TerminalContentRenderer); 
+registerContentType("terminal", TerminalContentRenderer);
