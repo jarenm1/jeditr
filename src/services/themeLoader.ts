@@ -1,57 +1,38 @@
-import { readDir, readTextFile, mkdir, BaseDirectory } from '@tauri-apps/plugin-fs';
+// Import theme files directly
+import Zinc from '../../src-tauri/themes/zinc.json';
+import Gray from '../../src-tauri/themes/gray.json';
+import solarizedDarkTheme from '../../src-tauri/themes/solarized-dark.json';
 
 export interface Theme {
   name: string;
   colors: Record<string, string>;
 }
 
-const THEME_DIR = 'themes';
 const themeRegistry: Record<string, Theme> = {};
 
-export async function ensureUserThemesDir() {
-  await mkdir(THEME_DIR, {
-    baseDir: BaseDirectory.AppConfig,
-    recursive: true,          // prevent EEXIST
-  }).catch(() => void 0);     // ignore “already exists”
-}
+// Built-in themes - imported directly
+const BUILT_IN_THEMES: Theme[] = [
+  Zinc as Theme,
+  Gray as Theme,
+  solarizedDarkTheme as Theme,
+];
 
 export async function loadAllThemes(): Promise<Theme[]> {
-  await ensureUserThemesDir();
   const themes: Theme[] = [];
-  // Load built-in themes
-  try {
-    const builtInFiles = await readDir(THEME_DIR, { baseDir: BaseDirectory.Resource });
-    for (const file of builtInFiles) {
-      if (file.name?.endsWith('.json')) {
-        const content = await readTextFile(`${THEME_DIR}/${file.name}`, { baseDir: BaseDirectory.Resource });
-        try {
-          const theme = JSON.parse(content);
-          if (theme.name && theme.colors) {
-            registerTheme(theme);
-            themes.push(theme);
-          }
-        } catch (err) {
-            console.error('Failed to read built-in themes:', err);
-        }
+  
+  // Load built-in themes from imports
+  for (const theme of BUILT_IN_THEMES) {
+    try {
+      if (theme.name && theme.colors) {
+        registerTheme(theme);
+        themes.push(theme);
+        console.log('Loaded theme:', theme.name);
       }
+    } catch (err) {
+      console.error('Failed to load built-in theme:', theme, err);
     }
-  } catch {}
-  // Load user themes
-  try {
-    const userFiles = await readDir(THEME_DIR, { baseDir: BaseDirectory.AppConfig });
-    for (const file of userFiles) {
-      if (file.name?.endsWith('.json')) {
-        const content = await readTextFile(`${THEME_DIR}/${file.name}`, { baseDir: BaseDirectory.AppConfig });
-        try {
-          const theme = JSON.parse(content);
-          if (theme.name && theme.colors) {
-            registerTheme(theme);
-            themes.push(theme);
-          }
-        } catch {}
-      }
-    }
-  } catch {}
+  }
+  
   return themes;
 }
 

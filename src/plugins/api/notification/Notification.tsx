@@ -54,7 +54,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, isFoc
         outline: isFocused ? '2px solid var(--color-primary)' : 'none',
         outlineOffset: '2px',
       }}
-      className="p-2 rounded flex flex-col min-w-[300px] max-w-md transition-all duration-300 ease-in-out opacity-100 translate-y-0 animate-fadein"
+      className="p-2 rounded flex flex-col w-80 transition-all duration-300 ease-in-out opacity-100 translate-y-0 animate-fadein"
       role="alert"
       aria-label={`${notification.severity || 'info'} notification from ${notification.pluginName}`}
     >
@@ -62,19 +62,19 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, isFoc
         {severityIcon[notification.severity as keyof typeof severityIcon] || severityIcon.info}
         <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-fg)' }}>{notification.pluginName}</span>
         <button
-          className="ml-auto text-gray-400 hover:text-white text-base leading-none"
+          className="btn btn-secondary btn-sm ml-auto text-base leading-none"
           onClick={() => removeNotification(notifId)}
           aria-label="Close notification"
-          style={{ color: 'var(--color-fg)' }}
+          style={{ padding: '0.125rem 0.375rem' }}
         >
           ×
         </button>
       </div>
-      <span className="text-xs break-words mt-0.5" style={{ color: 'var(--color-fg)' }}>{notification.message}</span>
+      <span className="text-xs break-words mt-0.5 leading-relaxed" style={{ color: 'var(--color-fg)' }}>{notification.message}</span>
       {notification.action && (
         <div className="mt-2 flex justify-end">
           <button
-            className="px-3 py-1 text-xs rounded bg-[var(--color-primary)] hover:bg-[var(--color-tertiary)] text-white transition-colors"
+            className="btn btn-primary btn-sm"
             onClick={(e) => {
               e.stopPropagation();
               executeAction(notification.action!.actionId);
@@ -168,10 +168,10 @@ export const NotificationModal: React.FC = () => {
         />
       ))}
       {hiddenCount > 0 && (
-        <div className="flex items-center mt-2 bg-[var(--color-secondary)] bg-opacity-80 rounded px-3 py-2 text-xs text-gray-200 min-w-[300px] max-w-md">
+        <div className="flex items-center mt-2 bg-[var(--color-secondary)] bg-opacity-80 rounded px-3 py-2 text-xs text-gray-200 w-80">
           <span className="flex-1">+{hiddenCount} more notifications</span>
           <button
-            className="ml-4 px-2 py-1 rounded bg-[var(--color-primary)] hover:bg-[var(--color-tertiary)] text-xs text-white"
+            className="btn btn-danger btn-sm ml-4"
             onClick={handleClearAll}
           >
             Clear All

@@ -62,12 +62,23 @@ export const PickerModal: React.FC<PickerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-900 rounded shadow-lg p-6 min-w-[320px] outline-none">
-        <div className="mb-4 text-lg font-bold text-white">{title}</div>
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div 
+        className="rounded shadow-lg p-6 min-w-[320px] outline-none border-2 border-[var(--theme-border-secondary)]"
+        style={{ 
+          backgroundColor: 'var(--color-modal-bg)',
+          color: 'var(--color-fg)'
+        }}
+      >
+        <div className="mb-4 text-lg font-bold">{title}</div>
         <input
           ref={inputRef}
-          className="w-full mb-3 px-3 py-2 rounded bg-gray-800 text-white outline-none"
+          className="w-full mb-3 px-3 py-2 rounded outline-none"
+          style={{
+            backgroundColor: 'var(--color-secondary)',
+            color: 'var(--color-fg)',
+            border: '1px solid var(--theme-border-secondary)'
+          }}
           placeholder="Type to search..."
           value={search}
           onChange={e => {
@@ -78,12 +89,16 @@ export const PickerModal: React.FC<PickerModalProps> = ({
         />
         <div className="flex flex-col gap-1 max-h-60 overflow-y-auto">
           {filteredItems.length === 0 ? (
-            <div className="px-3 py-2 text-gray-400">No results</div>
+            <div className="px-3 py-2" style={{ color: 'var(--theme-text-tertiary)' }}>No results</div>
           ) : (
             filteredItems.map((item, idx) => (
               <div
                 key={item.label + idx}
-                className={`px-3 py-2 rounded cursor-pointer ${idx === selectedIdx ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}
+                className="px-3 py-2 rounded cursor-pointer"
+                style={{
+                  backgroundColor: idx === selectedIdx ? 'var(--color-active)' : 'var(--color-secondary)',
+                  color: 'var(--color-fg)'
+                }}
                 onMouseEnter={() => setSelectedIdx(idx)}
                 onClick={() => onSelect(item)}
               >
@@ -92,9 +107,9 @@ export const PickerModal: React.FC<PickerModalProps> = ({
             ))
           )}
         </div>
-        <div className="mt-4 text-xs text-gray-400">Use ↑/↓ or Tab to navigate, Enter to select, Esc to close.</div>
+        <div className="mt-4 text-xs" style={{ color: 'var(--theme-text-tertiary)' }}>Use ↑/↓ or Tab to navigate, Enter to select, Esc to close.</div>
         <button
-          className="mt-4 px-4 py-2 bg-gray-700 text-white rounded"
+          className="btn btn-secondary mt-4"
           onClick={onClose}
         >
           Close

@@ -15,14 +15,14 @@ const Titlebar: React.FC<TitlebarProps> = ({ currentFileName, isDirty }) => {
   const { workspaces, activeWorkspaceId, setActiveWorkspace } = useEditorStore();
 
   return (
-    <div className="h-10 w-full flex items-center select-none border-b border-[var(--color-secondary)] px-2 relative">
+    <div className="h-10 w-full flex items-center select-none border-b px-2 relative" style={{ borderColor: 'var(--theme-border-secondary)' }}>
       {/* Left: Workspace Switcher */}
       <div className="flex gap-2 flex-shrink-0 z-10 pointer-events-auto" style={{ WebkitAppRegion: 'no-drag' } as any}>
         {workspaces.map((ws, idx) => (
           <button
             key={ws.id}
             onClick={e => { e.stopPropagation(); setActiveWorkspace(ws.id); }}
-            className={`px-2 py-1 rounded text-xs font-mono transition-colors ${ws.id === activeWorkspaceId ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+            className={`btn btn-sm font-courier-prime ${ws.id === activeWorkspaceId ? 'btn-primary' : ''}`}
             style={{ minWidth: 28 }}
           >
             {idx + 1}
@@ -33,7 +33,7 @@ const Titlebar: React.FC<TitlebarProps> = ({ currentFileName, isDirty }) => {
       <div className="flex-1 h-full titlebar-drag-region flex items-center justify-center" style={{ WebkitAppRegion: 'drag' } as any} />
       {/* Center: Title (absolutely centered, pointer-events-none) */}
       <div className="absolute left-0 right-0 top-0 h-full flex items-center justify-center pointer-events-none">
-        <div className="text-[var(--color-fg)] font-mono text-sm truncate pointer-events-auto">
+        <div className="font-courier-prime text-sm truncate pointer-events-auto theme-text-primary">
           {/* Placeholder for current file name */}
           {currentFileName || 'No file selected'}{isDirty ? ' *' : ''}
         </div>
@@ -41,7 +41,9 @@ const Titlebar: React.FC<TitlebarProps> = ({ currentFileName, isDirty }) => {
       {/* Right: Window Buttons */}
       <div className="flex flex-shrink-0 absolute right-0 top-0 h-full z-10" style={{ WebkitAppRegion: 'no-drag' } as any}>
         <button
-          className="w-10 h-10 flex items-center justify-center hover:bg-[var(--color-tertiary)] transition-colors"
+          className="w-10 h-10 flex items-center justify-center transition-colors theme-text-secondary"
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--theme-surface-hover)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           id="titlebar-minimize"
           aria-label="Minimize"
           onClick={handleMinimize}
@@ -51,7 +53,9 @@ const Titlebar: React.FC<TitlebarProps> = ({ currentFileName, isDirty }) => {
           </svg>
         </button>
         <button
-          className="w-10 h-10 flex items-center justify-center hover:bg-[var(--color-tertiary)] transition-colors"
+          className="w-10 h-10 flex items-center justify-center transition-colors theme-text-secondary"
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--theme-surface-hover)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           id="titlebar-maximize"
           aria-label="Maximize"
           onClick={handleMaximize}
@@ -61,7 +65,15 @@ const Titlebar: React.FC<TitlebarProps> = ({ currentFileName, isDirty }) => {
           </svg>
         </button>
         <button
-          className="w-10 h-10 flex items-center justify-center hover:bg-[var(--color-danger)] transition-colors"
+          className="w-10 h-10 flex items-center justify-center transition-colors theme-text-secondary"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--theme-accent-error)';
+            e.currentTarget.style.color = 'white';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = '';
+          }}
           id="titlebar-close"
           aria-label="Close"
           onClick={handleClose}

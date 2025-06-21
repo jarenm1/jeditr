@@ -10,6 +10,7 @@ import { loadAllPlugins } from "@plugins/loader";
 import "@services/keybinds";
 import { registerKeybind, unregisterKeybind } from "@services/keybinds";
 import { FileSelector } from "@components/FileSelector";
+import { ThemeSelector } from "@components/ThemeSelector";
 import { readFile, saveFile } from "@services/fileSystem";
 import { nanoid } from "nanoid";
 import { detectLanguage } from "@language/registry";
@@ -21,6 +22,7 @@ function App() {
   const { editorSettings, vimEnabled, workspaces, activeWorkspaceId, addPaneToWorkspace } = useEditorStore();
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showFileSelector, setShowFileSelector] = useState(false);
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [contentMap, setContentMap] = useState<Record<string, any>>({});
   const lastOpenedFileRef = useRef<string | null>(null);
   const contentMapRef = useRef(contentMap);
@@ -31,6 +33,22 @@ function App() {
   // Load all plugins on mount
   useEffect(() => {
     loadAllPlugins();
+  }, []);
+
+  // Load and apply default theme on mount
+  useEffect(() => {
+    import('@services/themeLoader').then(({ loadAllThemes, applyTheme, getTheme }) => {
+      loadAllThemes().then(themes => {
+        // Try to apply default dark theme, fall back to first available theme
+        const defaultTheme = getTheme('Default Dark') || themes[0];
+        if (defaultTheme) {
+          applyTheme(defaultTheme);
+          console.log('Applied theme:', defaultTheme.name);
+        }
+      }).catch(err => {
+        console.warn('Failed to load themes:', err);
+      });
+    });
   }, []);
 
   // Setup global Vim dispatcher and register actions on mount
@@ -149,6 +167,19 @@ function App() {
     };
   }, []);
 
+  // Register theme selector keybind
+  useEffect(() => {
+    registerKeybind({
+      id: 'themeSelector.open',
+      keys: ['Ctrl', 'H'],
+      description: 'Open theme selector modal',
+      handler: () => setShowThemeSelector(true),
+    });
+    return () => {
+      unregisterKeybind('themeSelector.open');
+    };
+  }, []);
+
   // Handler for file selection
   async function handleFileSelect(file: { label: string; value: any }) {
     try {
@@ -213,6 +244,13 @@ function App() {
           isOpen={showFileSelector}
           onClose={() => setShowFileSelector(false)}
           onSelect={handleFileSelect}
+        />
+        <ThemeSelector
+          isOpen={showThemeSelector}
+          onClose={() => setShowThemeSelector(false)}
+          onSelect={(theme) => {
+            console.log('Theme selected:', theme.name);
+          }}
         />
         <div className="flex flex-col grow min-h-0 h-full">
           <div className="flex-1 flex flex-col min-h-0">

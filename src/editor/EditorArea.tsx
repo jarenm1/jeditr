@@ -25,7 +25,7 @@ export const EditorArea: React.FC<EditorAreaProps> = ({ editorSettings, contentM
       {activeWorkspace ? (
         <Workspace workspace={activeWorkspace} editorSettings={editorSettings} contentMap={contentMap} />
       ) : (
-        <div className="flex-1 flex items-center justify-center text-lg text-gray-400">No workspace open</div>
+        <div className="flex-1 flex items-center justify-center text-xl text-gray-400">No workspace open</div>
       )}
     </div>
   );
