@@ -4,6 +4,7 @@ import { EditorSettings } from "@editor/editorStore/settings";
 import { EditorPane } from "@editor/EditorPane";
 import { registerKeybind, unregisterKeybind } from "@services/keybinds";
 import { useEditorStore } from "@editor/editorStore/index";
+import { useLanguageStore } from "@ubar/ubarStore/languageStore";
 
 interface WorkspaceProps {
   workspace: EditorWorkspace;
@@ -12,60 +13,66 @@ interface WorkspaceProps {
 }
 
 /**
- * Workspace Component
+ * Workspace
  *
- * Renders all panes in a given workspace. Each workspace represents a user's working context and contains its own set of panes.
- * This component is used by EditorArea to display the active workspace.
+ * This component renders a single workspace and its panes.
+ * It maps each pane to its corresponding content and renders it using the EditorPane component.
  */
 export const Workspace: React.FC<WorkspaceProps> = ({
   workspace,
   editorSettings,
   contentMap,
 }) => {
+  const { removePaneFromWorkspace, removeWorkspace, setActivePaneInWorkspace } = useEditorStore();
+  const { removePaneLanguage } = useLanguageStore();
+
+  // Register keybind for closing panes
   useEffect(() => {
-    // Registered in component because it is only needed when component is mounted.
-    registerKeybind({
-      id: "pane.close",
-      keys: ["Ctrl", "Q"],
-      description: "Close the focused pane",
-      handler: () => {
-        const {
-          activeWorkspaceId,
-          workspaces,
-          removePaneFromWorkspace,
-          removeWorkspace,
-        } = useEditorStore.getState() as any;
-        const ws = workspaces.find(
-          (w: EditorWorkspace) => w.id === activeWorkspaceId,
-        );
-        if (ws && ws.panes.length > 0) {
-          // For now, close the last pane (could be improved to track focus)
-          const paneId = ws.panes[ws.panes.length - 1].id;
-          removePaneFromWorkspace(ws.id, paneId);
-          // Check if workspace is now empty
-          const updatedWs = workspaces.find(
-            (w: EditorWorkspace) => w.id === ws.id,
-          );
-          if (
-            updatedWs &&
-            updatedWs.panes.length === 1 &&
-            workspaces.length > 1
-          ) {
-            // After removal, will be 0 panes, so remove workspace
-            removeWorkspace(ws.id);
+    const closeCurrentPane = () => {
+      // If there are no panes, close the workspace itself
+      if (workspace.panes.length === 0) {
+        removeWorkspace(workspace.id);
+        return;
+      }
+
+      // Close the currently active pane instead of hardcoded first pane
+      if (workspace.activePaneId) {
+        const paneToClose = workspace.panes.find(p => p.id === workspace.activePaneId);
+        if (paneToClose) {
+          // Clean up language store entry (works for all content types)
+          removePaneLanguage(paneToClose.id);
+          // Remove the pane from workspace
+          removePaneFromWorkspace(workspace.id, paneToClose.id);
+          
+          // If this was the last pane, close the workspace
+          if (workspace.panes.length === 1) {
+            removeWorkspace(workspace.id);
           }
-        } else if (ws && ws.panes.length === 0 && workspaces.length > 1) {
-          // If already no panes, remove workspace
-          removeWorkspace(ws.id);
         }
-      },
+      } else {
+        // Fallback: close first pane if no active pane is set
+        const paneToClose = workspace.panes[0];
+        removePaneLanguage(paneToClose.id);
+        removePaneFromWorkspace(workspace.id, paneToClose.id);
+        
+        // If this was the last pane, close the workspace
+        if (workspace.panes.length === 1) {
+          removeWorkspace(workspace.id);
+        }
+      }
+    };
+
+    registerKeybind({
+      id: `workspace-${workspace.id}-close-pane`,
+      keys: ["Ctrl", "W"],
+      description: "Close current pane or workspace",
+      handler: closeCurrentPane,
     });
 
-    // Cleanup on unmount
     return () => {
-      unregisterKeybind("pane.close");
+      unregisterKeybind(`workspace-${workspace.id}-close-pane`);
     };
-  }, []);
+  }, [workspace.id, workspace.panes, workspace.activePaneId, removePaneFromWorkspace, removeWorkspace, removePaneLanguage]);
 
   return (
     <div className="flex flex-row w-full h-full grow">
@@ -75,12 +82,20 @@ export const Workspace: React.FC<WorkspaceProps> = ({
           type: "unknown",
           data: {},
         };
+        const isActivePane = workspace.activePaneId === pane.id;
+        
         return (
           <div
             key={pane.id}
-            className="flex-1 min-w-0 h-full border-r border-gray-700 last:border-r-0"
+            className={`flex-1 min-w-0 h-full border-r border-gray-700 last:border-r-0 ${
+              isActivePane ? 'ring-1 ring-blue-500/50' : ''
+            }`}
           >
-            <EditorPane content={content} editorSettings={editorSettings} />
+            <EditorPane 
+              content={content} 
+              editorSettings={editorSettings} 
+              paneId={pane.id}
+            />
           </div>
         );
       })}

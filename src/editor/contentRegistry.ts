@@ -2,7 +2,11 @@ import React from "react";
 import "@editor/registerEditorContentType";
 import TerminalContentRenderer from "./TerminalContentRenderer";
 
-export type ContentRenderer = React.FC<{ content: any; editorSettings: any }>;
+export type ContentRenderer = React.FC<{ 
+  content: any; 
+  editorSettings: any; 
+  paneId?: string; 
+}>;
 
 const registry: Record<string, ContentRenderer> = {};
 
@@ -15,13 +19,14 @@ const registry: Record<string, ContentRenderer> = {};
  *
  * Example usage:
  * ```
- * registerContentType('editor', function EditorContentRenderer({ content, editorSettings }) {
+ * registerContentType('editor', function EditorContentRenderer({ content, editorSettings, paneId }) {
  *   const { content: editorContent, language, onChange } = content.data;
  *   return React.createElement(Editor, {
  *     content: editorContent,
  *     language,
  *     onChange,
  *     settings: editorSettings,
+ *     paneId,
  *   });
  * });
  * ```

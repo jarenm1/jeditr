@@ -2,6 +2,7 @@
 import Zinc from "../../src-tauri/themes/zinc.json";
 import Gray from "../../src-tauri/themes/gray.json";
 import solarizedDarkTheme from "../../src-tauri/themes/solarized-dark.json";
+import Pink from "../../src-tauri/themes/baby-pink.json";
 
 export interface Theme {
   name: string;
@@ -14,6 +15,7 @@ const themeRegistry: Record<string, Theme> = {};
 const BUILT_IN_THEMES: Theme[] = [
   Zinc as Theme,
   Gray as Theme,
+  Pink as Theme,
   solarizedDarkTheme as Theme,
 ];
 

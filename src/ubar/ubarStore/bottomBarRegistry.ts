@@ -1,23 +1,16 @@
+import { BottomBarPlugin } from "@plugins/types";
 import React from "react";
 
-export interface BottomBarItem {
-  id: string;
-  render: () => React.ReactNode;
-  order?: number;
+export const bottomBarRegistry: BottomBarPlugin[] = [];
+
+export function registerBottomBarPlugin(plugin: BottomBarPlugin) {
+  bottomBarRegistry.push(plugin);
 }
 
-const registry: Record<string, BottomBarItem> = {};
-
-export function registerBottomBarItem(item: BottomBarItem) {
-  registry[item.id] = item;
-}
-
-export function unregisterBottomBarItem(id: string) {
-  delete registry[id];
-}
-
-export function getBottomBarItems(): BottomBarItem[] {
-  return Object.values(registry).sort(
-    (a, b) => (a.order ?? 0) - (b.order ?? 0),
-  );
-}
+// Register the language widget as a built-in bottom bar plugin
+// Note: The actual paneId is dynamically passed in BottomBar component
+registerBottomBarPlugin({
+  id: "language-widget",
+  render: () => React.createElement("div", {}, "Language widget placeholder"),
+  order: 100, // High order to appear towards the right
+});

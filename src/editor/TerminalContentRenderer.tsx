@@ -10,6 +10,7 @@ import {
 interface TerminalContentProps {
   content: any;
   editorSettings: any;
+  paneId?: string;
   sessionId?: string;
   onExit?: (sessionId: string, exitStatus: number | null) => void;
 }
@@ -17,6 +18,7 @@ interface TerminalContentProps {
 const TerminalContentRenderer: React.FC<TerminalContentProps> = ({
   content,
   editorSettings,
+  paneId,
   sessionId: propSessionId,
   onExit,
 }) => {

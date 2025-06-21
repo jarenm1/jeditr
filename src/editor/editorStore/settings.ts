@@ -2,10 +2,26 @@
  * Settings Slice
  *
  * Manages editor settings, loading state, and error state.
+ * These settings are editor-agnostic and work with both Monaco and CodeMirror.
  */
 import { StateCreator } from "zustand";
 
+/**
+ * Universal Editor Settings
+ * These settings work with both Monaco and CodeMirror editors
+ */
 export interface EditorSettings {
+  theme?: string;
+  fontSize?: number;
+  fontFamily?: string;
+  lineHeight?: number;
+  vimMode?: boolean;
+  keybindings?: {
+    leader: string;
+    fuzzyFinder: string[];
+    fileSearch: string[];
+  };
+  // Allow additional properties for extensibility
   [key: string]: any;
 }
 
@@ -15,7 +31,11 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   fontFamily: "Fira Mono, monospace",
   lineHeight: 1.6,
   vimMode: true,
-  // Add more defaults as needed
+  keybindings: {
+    leader: " ",
+    fuzzyFinder: ["Ctrl", "P"],
+    fileSearch: ["Ctrl", "Shift", "F"],
+  },
 };
 
 export interface SettingsSlice {

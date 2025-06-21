@@ -13,13 +13,14 @@ import { FileSelector } from "@components/FileSelector";
 import { ThemeSelector } from "@components/ThemeSelector";
 import { readFile, saveFile } from "@services/fileSystem";
 import { nanoid } from "nanoid";
-import { detectLanguage } from "@language/registry";
+import { detectLanguage } from "@plugins/api/language";
 import { PluginModals } from "@plugins/api/modal/PluginModals";
 import { focusFirstNotification } from "@plugins/api/notification/notificationStore";
 import { useNotificationStore } from "@plugins/api/notification/notificationStore";
+import { terminalService } from "@services/terminalService";
 
 function App() {
-  const { editorSettings, activeWorkspaceId, addPaneToWorkspace } =
+  const { editorSettings, activeWorkspaceId, addPaneToWorkspace, workspaces } =
     useEditorStore();
   const [showFileSelector, setShowFileSelector] = useState(false);
   const [showThemeSelector, setShowThemeSelector] = useState(false);
@@ -55,6 +56,22 @@ function App() {
     );
   }, []);
 
+  // Register terminal service and keybind
+  useEffect(() => {
+    // Register the app as the terminal manager
+    terminalService.setManager({
+      contentMap,
+      setContentMap,
+    });
+
+    // Register the terminal keybind
+    terminalService.registerKeybind();
+
+    return () => {
+      terminalService.unregisterKeybind();
+    };
+  }, [contentMap]);
+
   // Register file selector keybind once
   useEffect(() => {
     registerKeybind({
@@ -68,31 +85,39 @@ function App() {
     };
   }, []);
 
-  // Register save file keybind ONCE, always use latest contentMap via ref
+  // Register theme selector keybind once
+  useEffect(() => {
+    registerKeybind({
+      id: "themeSelector.open",
+      keys: ["Ctrl", "H"],
+      description: "Open theme selector modal", 
+      handler: () => setShowThemeSelector(true),
+    });
+    return () => {
+      unregisterKeybind("themeSelector.open");
+    };
+  }, []);
+
+  // Keybind for saving files
   useEffect(() => {
     registerKeybind({
       id: "file.save",
-      keys: ["Ctrl", "W"],
-      description: "Save the currently active file",
+      keys: ["Ctrl", "S"],
+      description: "Save current file",
       handler: async () => {
-        const fileId = lastOpenedFileRef.current;
-        if (!fileId) {
-          alert("No file to save.");
-          return;
-        }
-        const contentObj = contentMapRef.current[fileId];
-        if (!contentObj || !contentObj.data?.path) {
-          alert("No file to save.");
-          return;
-        }
-        try {
-          await saveFile(contentObj.data.path, contentObj.data.content);
-          alert("File saved!");
-        } catch (err) {
-          alert(
-            "Failed to save file: " +
-              (err instanceof Error ? err.message : String(err)),
-          );
+        if (lastOpenedFileRef.current) {
+          const contentObj = contentMapRef.current[lastOpenedFileRef.current];
+          if (contentObj && contentObj.data?.path && contentObj.data?.content) {
+            try {
+              await saveFile(contentObj.data.path, contentObj.data.content);
+              console.log("File saved successfully");
+            } catch (err) {
+              alert(
+                "Failed to save file: " +
+                  (err instanceof Error ? err.message : String(err)),
+              );
+            }
+          }
         }
       },
     });
@@ -101,44 +126,13 @@ function App() {
     };
   }, []);
 
-  // Register terminal keybind ONCE
-  useEffect(() => {
-    registerKeybind({
-      id: "terminal.open",
-      keys: ["Ctrl", "T"],
-      description: "Open a new terminal",
-      handler: () => {
-        const contentId = `terminal-${nanoid()}`;
-        const pane = {
-          id: `pane-${nanoid()}`,
-          contentId,
-        };
-        if (activeWorkspaceId) {
-          addPaneToWorkspace(activeWorkspaceId, pane);
-        }
-        setContentMap((prev) => ({
-          ...prev,
-          [contentId]: {
-            id: contentId,
-            type: "terminal",
-            data: {
-              initialText: "", // Optionally set initial text
-            },
-          },
-        }));
-      },
-    });
-    return () => {
-      unregisterKeybind("terminal.open");
-    };
-  }, [activeWorkspaceId, addPaneToWorkspace]);
-
-  // Register notification focus keybind
+  // Register notification keybinds
+  const { notifications } = useNotificationStore();
   useEffect(() => {
     registerKeybind({
       id: "notification.focus",
       keys: ["Ctrl", "Shift", "N"],
-      description: "Focus notification area",
+      description: "Focus first notification",
       handler: () => {
         focusFirstNotification();
       },
@@ -148,36 +142,48 @@ function App() {
     };
   }, []);
 
-  // Register notification clear all keybind
+  // Keybind for opening file selector with Ctrl+P
   useEffect(() => {
     registerKeybind({
-      id: "notification.clearAll",
-      keys: ["Ctrl", "Shift", "C"],
-      description: "Clear all notifications",
-      handler: () => {
-        const notifications = useNotificationStore.getState().notifications;
-        notifications.forEach((n) =>
-          useNotificationStore.getState().removeNotification(n.id),
-        );
-      },
+      id: "fileSelector.openFuzzy",
+      keys: ["Ctrl", "P"],
+      description: "Open fuzzy file finder",
+      handler: () => setShowFileSelector(true),
     });
     return () => {
-      unregisterKeybind("notification.clearAll");
+      unregisterKeybind("fileSelector.openFuzzy");
     };
   }, []);
 
-  // Register theme selector keybind
+  // Add keybind for closing notifications
   useEffect(() => {
+    const dismissAllNotifications = () => {
+      // Remove all notifications by getting their IDs and removing them one by one
+      const { notifications, removeNotification } = useNotificationStore.getState();
+      notifications.forEach(notification => removeNotification(notification.id));
+    };
+
     registerKeybind({
-      id: "themeSelector.open",
-      keys: ["Ctrl", "H"],
-      description: "Open theme selector modal",
-      handler: () => setShowThemeSelector(true),
+      id: "notification.dismissAll",
+      keys: ["Escape"],
+      description: "Dismiss all notifications",
+      handler: dismissAllNotifications,
     });
+
     return () => {
-      unregisterKeybind("themeSelector.open");
+      unregisterKeybind("notification.dismissAll");
     };
   }, []);
+
+  // Focus notification when new ones arrive
+  useEffect(() => {
+    if (notifications.length > 0) {
+      // Auto-focus the first notification when new ones arrive
+      setTimeout(() => {
+        focusFirstNotification();
+      }, 100);
+    }
+  }, [notifications.length]);
 
   // Handler for file selection
   async function handleFileSelect(file: { label: string; value: any }) {
@@ -264,7 +270,7 @@ function App() {
         </div>
         <BottomBar />
       </main>
-    </>
+        </>
   );
 }
 
