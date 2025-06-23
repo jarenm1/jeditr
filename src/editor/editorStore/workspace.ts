@@ -8,6 +8,7 @@
  */
 import { StateCreator } from "zustand";
 import { EditorPane } from "./pane";
+import { nanoid } from "nanoid";
 
 export interface EditorWorkspace {
   id: string;
@@ -37,7 +38,7 @@ export const createWorkspaceSlice: StateCreator<
   workspaces: [],
   activeWorkspaceId: null,
   addWorkspace: (name) => {
-    const newId = `workspace-${Date.now()}`;
+    const newId = `workspace-${nanoid()}`;
     set((state) => ({
       workspaces: [...state.workspaces, { id: newId, name, panes: [] }],
       activeWorkspaceId: newId,

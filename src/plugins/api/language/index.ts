@@ -1,73 +1,83 @@
-import { LanguagePlugin } from "@plugins/types";
-import { languageRegistry } from "./languageRegistry";
-import { languageLoader } from "./languageLoader";
-// Import built-in languages to register them
-import "./builtinLanguages";
+interface LanguageDefinition {
+  id: string;
+  names: string[];
+  extensions: string[];
+  loader?: () => Promise<any>;
+  priority?: number;
+}
+
+// Simple in-memory language registry
+const languageRegistry = new Map<string, LanguageDefinition>();
+const extensionMap = new Map<string, string>();
 
 /**
- * Register a language plugin
- * This is the main API for plugins to add language support
+ * Register a language with the editor
  */
-export function registerLanguage(plugin: LanguagePlugin): void {
-  languageRegistry.register(plugin);
+export function registerLanguage(language: LanguageDefinition): void {
+  // Store by ID
+  languageRegistry.set(language.id, language);
+  
+  // Store by names (aliases)
+  language.names.forEach(name => {
+    languageRegistry.set(name.toLowerCase(), language);
+  });
+  
+  // Map extensions to language ID
+  language.extensions.forEach(ext => {
+    extensionMap.set(ext.toLowerCase(), language.id);
+  });
+  
+  console.debug(`[Language] Registered: ${language.id}`);
 }
 
 /**
- * Load language support for a specific language ID
- */
-export async function loadLanguage(languageId: string) {
-  return languageLoader.loadLanguage(languageId);
-}
-
-/**
- * Load language support for a file
- * Returns both the LanguageSupport and detected language ID
- */
-export async function loadLanguageForFile(filePath: string, content?: string) {
-  return languageLoader.loadLanguageForFile(filePath, content);
-}
-
-/**
- * Detect language ID for a file (without loading)
+ * Detect language from file path
  */
 export function detectLanguage(filePath: string, content?: string): string {
-  return languageRegistry.detectLanguage(filePath, content);
+  // Try extension first
+  const ext = getFileExtension(filePath);
+  if (ext) {
+    const languageId = extensionMap.get(ext);
+    if (languageId) {
+      return languageId;
+    }
+  }
+  
+  // TODO: Add content-based detection here when needed
+  
+  // Fallback to plaintext
+  return 'plaintext';
 }
 
 /**
- * Get information about a registered language
+ * Get language definition by ID or name
  */
-export function getLanguageInfo(languageId: string) {
-  return languageRegistry.get(languageId);
+export function getLanguage(idOrName: string): LanguageDefinition | undefined {
+  return languageRegistry.get(idOrName.toLowerCase());
 }
 
 /**
  * Get all registered languages
  */
-export function getAllLanguages() {
-  return languageRegistry.getAllLanguages();
+export function getAllLanguages(): LanguageDefinition[] {
+  const seen = new Set<string>();
+  const languages: LanguageDefinition[] = [];
+  
+  for (const [key, lang] of languageRegistry.entries()) {
+    if (key === lang.id && !seen.has(lang.id)) {
+      seen.add(lang.id);
+      languages.push(lang);
+    }
+  }
+  
+  return languages.sort((a, b) => a.id.localeCompare(b.id));
 }
 
-/**
- * Check if a language is currently loading
- */
-export function isLanguageLoading(languageId: string): boolean {
-  return languageLoader.isLoading(languageId);
+// Helper function
+function getFileExtension(filePath: string): string | null {
+  const lastDot = filePath.lastIndexOf('.');
+  if (lastDot === -1 || lastDot === filePath.length - 1) {
+    return null;
+  }
+  return filePath.slice(lastDot).toLowerCase();
 }
-
-/**
- * Check if a language is loaded and cached
- */
-export function isLanguageLoaded(languageId: string): boolean {
-  return languageRegistry.isLoaded(languageId);
-}
-
-/**
- * Get cached language support if available
- */
-export function getCachedLanguage(languageId: string) {
-  return languageLoader.getCached(languageId);
-}
-
-// Re-export types for convenience
-export type { LanguagePlugin } from "@plugins/types"; 

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { EditorSettings } from "@editor/editorStore/settings";
 import { getContentRenderer } from "@editor/contentRegistry";
 import { useEditorStore } from "@editor/editorStore";
-import { useLanguageStore } from "@ubar/ubarStore/languageStore";
+import { useLanguageActions } from "@ubar/ubarStore/languageStore";
 
 // Define the shape of content for rendering
 export interface Content {
@@ -41,14 +41,28 @@ export const EditorPane: React.FC<EditorPaneProps> = ({
   paneId,
 }) => {
   const { activeWorkspaceId, setActivePaneInWorkspace } = useEditorStore();
-  const { setPaneContentType } = useLanguageStore();
+  const { setPaneContentType, setPaneFile, setPaneLanguage } = useLanguageActions();
   
-  // Track content type when pane or content changes
+  // Track content and file information when pane or content changes
   useEffect(() => {
-    if (paneId && content.type) {
-      setPaneContentType(paneId, content.type);
+    if (!paneId) return;
+    
+    // Always set the content type
+    setPaneContentType(paneId, content.type);
+    
+    // For editor content, also track file and language information
+    if (content.type === 'editor' && content.data) {
+      const { path: filePath, language } = content.data;
+      
+      if (filePath && language) {
+        // Use setPaneFile which sets both file path and language
+        setPaneFile(paneId, filePath, language);
+      } else if (language) {
+        // Fallback to just setting language if no file path
+        setPaneLanguage(paneId, language);
+      }
     }
-  }, [paneId, content.type, setPaneContentType]);
+  }, [paneId, content.type, content.data, setPaneContentType, setPaneFile, setPaneLanguage]);
   
   // Handle focus to set this pane as active
   const handleFocus = useCallback(() => {

@@ -1,77 +1,230 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
-interface LanguageState {
-  // Map pane ID to language ID
-  paneLanguages: Record<string, string>;
-  // Map pane ID to loading state
-  paneLoadingStates: Record<string, boolean>;
-  // Map pane ID to content type
-  paneContentTypes: Record<string, string>;
-  
-  // Actions
-  setPaneLanguage: (paneId: string, languageId: string) => void;
-  setPaneLoadingState: (paneId: string, isLoading: boolean) => void;
-  setPaneContentType: (paneId: string, contentType: string) => void;
-  removePaneLanguage: (paneId: string) => void;
-  getPaneLanguage: (paneId: string) => string | undefined;
-  getPaneContentType: (paneId: string) => string | undefined;
-  isPaneLanguageLoading: (paneId: string) => boolean;
+interface PaneFileInfo {
+  filePath?: string;
+  languageId: string;
+  contentType: string;
+  isLoading: boolean;
+  lastUpdated: number;
 }
 
-export const useLanguageStore = create<LanguageState>((set, get) => ({
-  paneLanguages: {},
-  paneLoadingStates: {},
-  paneContentTypes: {},
+interface LanguageState {
+  // Map pane ID to file and language information
+  paneInfo: Record<string, PaneFileInfo>;
   
-  setPaneLanguage: (paneId: string, languageId: string) => {
-    set((state) => ({
-      paneLanguages: {
-        ...state.paneLanguages,
-        [paneId]: languageId,
-      },
-    }));
-  },
+  // Actions for managing pane state
+  setPaneLanguage: (paneId: string, languageId: string) => void;
+  setPaneFile: (paneId: string, filePath: string, languageId: string) => void;
+  setPaneContentType: (paneId: string, contentType: string) => void;
+  setPaneLoadingState: (paneId: string, isLoading: boolean) => void;
+  updatePaneInfo: (paneId: string, updates: Partial<PaneFileInfo>) => void;
   
-  setPaneLoadingState: (paneId: string, isLoading: boolean) => {
-    set((state) => ({
-      paneLoadingStates: {
-        ...state.paneLoadingStates,
-        [paneId]: isLoading,
-      },
-    }));
-  },
+  // Getters
+  getPaneLanguage: (paneId: string) => string | undefined;
+  getPaneFilePath: (paneId: string) => string | undefined;
+  getPaneContentType: (paneId: string) => string | undefined;
+  isPaneLanguageLoading: (paneId: string) => boolean;
+  getPaneInfo: (paneId: string) => PaneFileInfo | undefined;
   
-  setPaneContentType: (paneId: string, contentType: string) => {
-    set((state) => ({
-      paneContentTypes: {
-        ...state.paneContentTypes,
-        [paneId]: contentType,
-      },
-    }));
-  },
+  // Cleanup
+  removePaneInfo: (paneId: string) => void;
   
-  removePaneLanguage: (paneId: string) => {
-    set((state) => {
-      const { [paneId]: _, ...remainingLanguages } = state.paneLanguages;
-      const { [paneId]: __, ...remainingLoadingStates } = state.paneLoadingStates;
-      const { [paneId]: ___, ...remainingContentTypes } = state.paneContentTypes;
-      return {
-        paneLanguages: remainingLanguages,
-        paneLoadingStates: remainingLoadingStates,
-        paneContentTypes: remainingContentTypes,
-      };
+  // Bulk operations
+  getAllPaneLanguages: () => Record<string, string>;
+  getPanesByLanguage: (languageId: string) => string[];
+  
+  // File switching detection
+  isFileChanged: (paneId: string, newFilePath: string) => boolean;
+}
+
+export const useLanguageStore = create<LanguageState>()(
+  subscribeWithSelector((set, get) => ({
+    paneInfo: {},
+    
+    setPaneLanguage: (paneId: string, languageId: string) => {
+      set((state) => ({
+        paneInfo: {
+          ...state.paneInfo,
+          [paneId]: {
+            ...state.paneInfo[paneId],
+            languageId,
+            lastUpdated: Date.now(),
+          },
+        },
+      }));
+    },
+    
+    setPaneFile: (paneId: string, filePath: string, languageId: string) => {
+      set((state) => ({
+        paneInfo: {
+          ...state.paneInfo,
+          [paneId]: {
+            ...state.paneInfo[paneId],
+            filePath,
+            languageId,
+            contentType: 'editor', // Default for files
+            isLoading: false,
+            lastUpdated: Date.now(),
+          },
+        },
+      }));
+    },
+    
+    setPaneContentType: (paneId: string, contentType: string) => {
+      set((state) => ({
+        paneInfo: {
+          ...state.paneInfo,
+          [paneId]: {
+            ...state.paneInfo[paneId],
+            contentType,
+            lastUpdated: Date.now(),
+          },
+        },
+      }));
+    },
+    
+    setPaneLoadingState: (paneId: string, isLoading: boolean) => {
+      set((state) => ({
+        paneInfo: {
+          ...state.paneInfo,
+          [paneId]: {
+            ...state.paneInfo[paneId],
+            isLoading,
+            lastUpdated: Date.now(),
+          },
+        },
+      }));
+    },
+    
+    updatePaneInfo: (paneId: string, updates: Partial<PaneFileInfo>) => {
+      set((state) => ({
+        paneInfo: {
+          ...state.paneInfo,
+          [paneId]: {
+            ...state.paneInfo[paneId],
+            ...updates,
+            lastUpdated: Date.now(),
+          },
+        },
+      }));
+    },
+    
+    // Getters
+    getPaneLanguage: (paneId: string) => {
+      return get().paneInfo[paneId]?.languageId;
+    },
+    
+    getPaneFilePath: (paneId: string) => {
+      return get().paneInfo[paneId]?.filePath;
+    },
+    
+    getPaneContentType: (paneId: string) => {
+      return get().paneInfo[paneId]?.contentType;
+    },
+    
+    isPaneLanguageLoading: (paneId: string) => {
+      return get().paneInfo[paneId]?.isLoading || false;
+    },
+    
+    getPaneInfo: (paneId: string) => {
+      return get().paneInfo[paneId];
+    },
+    
+    // Cleanup
+    removePaneInfo: (paneId: string) => {
+      set((state) => {
+        const { [paneId]: removed, ...remainingPanes } = state.paneInfo;
+        return {
+          paneInfo: remainingPanes,
+        };
+      });
+    },
+    
+    // Bulk operations
+    getAllPaneLanguages: () => {
+      const state = get();
+      const result: Record<string, string> = {};
+      
+      Object.entries(state.paneInfo).forEach(([paneId, info]) => {
+        result[paneId] = info.languageId;
+      });
+      
+      return result;
+    },
+    
+    getPanesByLanguage: (languageId: string) => {
+      const state = get();
+      return Object.entries(state.paneInfo)
+        .filter(([_, info]) => info.languageId === languageId)
+        .map(([paneId, _]) => paneId);
+    },
+    
+    // File switching detection
+    isFileChanged: (paneId: string, newFilePath: string) => {
+      const currentInfo = get().paneInfo[paneId];
+      return currentInfo?.filePath !== newFilePath;
+    },
+  }))
+);
+
+// ============================================================================
+// HELPER HOOKS - Zustand Best Practices
+// ============================================================================
+
+/**
+ * Hook to get specific pane info with automatic re-renders
+ * Only re-renders when the specific pane's data changes
+ */
+export function usePaneInfo(paneId: string) {
+  return useLanguageStore((state) => state.paneInfo[paneId]);
+}
+
+/**
+ * Hook to get just the language for a pane
+ * More efficient than getting all pane info if you only need language
+ */
+export function usePaneLanguage(paneId: string) {
+  return useLanguageStore((state) => state.paneInfo[paneId]?.languageId);
+}
+
+/**
+ * Hook to watch for file changes in a pane
+ * Useful for triggering re-renders when file switches
+ */
+export function usePaneFileChange(paneId: string) {
+  return useLanguageStore((state) => ({
+    filePath: state.paneInfo[paneId]?.filePath,
+    lastUpdated: state.paneInfo[paneId]?.lastUpdated,
+  }));
+}
+
+/**
+ * Hook to subscribe to language changes across all panes
+ * Useful for debugging or global language statistics
+ */
+export function useAllPaneLanguages() {
+  return useLanguageStore((state) => {
+    const result: Record<string, string> = {};
+    Object.entries(state.paneInfo).forEach(([paneId, info]) => {
+      result[paneId] = info.languageId;
     });
-  },
-  
-  getPaneLanguage: (paneId: string) => {
-    return get().paneLanguages[paneId];
-  },
-  
-  getPaneContentType: (paneId: string) => {
-    return get().paneContentTypes[paneId];
-  },
-  
-  isPaneLanguageLoading: (paneId: string) => {
-    return get().paneLoadingStates[paneId] || false;
-  },
-})); 
+    return result;
+  });
+}
+
+/**
+ * Actions hook - get all the action functions
+ * Use this pattern to avoid importing the entire store when you only need actions
+ */
+export function useLanguageActions() {
+  return useLanguageStore((state) => ({
+    setPaneLanguage: state.setPaneLanguage,
+    setPaneFile: state.setPaneFile,
+    setPaneContentType: state.setPaneContentType,
+    setPaneLoadingState: state.setPaneLoadingState,
+    updatePaneInfo: state.updatePaneInfo,
+    removePaneInfo: state.removePaneInfo,
+    isFileChanged: state.isFileChanged,
+  }));
+} 

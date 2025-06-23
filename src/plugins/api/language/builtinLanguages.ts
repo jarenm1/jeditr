@@ -1,8 +1,9 @@
-import { registerLanguage } from "./index";
+import { registerLanguage } from "./";
 
 /**
- * Register all built-in CodeMirror languages
+ * Register all built-in CodeMirror languages with lazy loading
  * This file is automatically loaded to ensure core languages are available
+ * Languages are only imported when actually needed
  */
 
 // JavaScript
@@ -86,16 +87,13 @@ registerLanguage({
   priority: 20,
 });
 
-// Plaintext (always available) - returns null to indicate no language support
+// Plaintext
 registerLanguage({
   id: "plaintext",
   names: ["plaintext", "text", "txt"],
   extensions: [".txt"],
-  loader: async () => {
-    // Return null for plaintext - this will be handled specially in the editor
-    return null as any;
-  },
-  priority: 1, // Lowest priority
+  loader: async () => null as any,
+  priority: 1,
 });
 
-console.debug("[BuiltinLanguages] Registered all built-in languages"); 
+console.debug("[BuiltinLanguages] Registered all built-in languages with lazy loading"); 

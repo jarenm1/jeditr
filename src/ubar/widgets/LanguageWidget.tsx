@@ -1,13 +1,13 @@
 import React from "react";
-import { useLanguageStore } from "@ubar/ubarStore/languageStore";
-import { getLanguageInfo } from "@plugins/api/language";
+import { usePaneInfo } from "@ubar/ubarStore/languageStore";
 
 interface LanguageWidgetProps {
   paneId?: string;
 }
 
 export const LanguageWidget: React.FC<LanguageWidgetProps> = ({ paneId }) => {
-  const { getPaneLanguage, getPaneContentType, isPaneLanguageLoading } = useLanguageStore();
+  // Use the optimized hook that only re-renders when this specific pane changes
+  const paneInfo = usePaneInfo(paneId || '');
   
   if (!paneId) {
     return (
@@ -16,10 +16,16 @@ export const LanguageWidget: React.FC<LanguageWidgetProps> = ({ paneId }) => {
       </div>
     );
   }
-  
-  const contentType = getPaneContentType(paneId);
-  const languageId = getPaneLanguage(paneId);
-  const isLoading = isPaneLanguageLoading(paneId);
+
+  if (!paneInfo) {
+    return (
+      <div className="text-gray-400 text-sm px-2 py-1">
+        Unknown
+      </div>
+    );
+  }
+
+  const { languageId, contentType, isLoading, filePath } = paneInfo;
   
   // For non-editor content types, show the content type name
   if (contentType && contentType !== "editor") {
@@ -51,15 +57,20 @@ export const LanguageWidget: React.FC<LanguageWidgetProps> = ({ paneId }) => {
       </div>
     );
   }
+
+  // Show language name (you can enhance this with getLanguageInfo when you rebuild the language API)
+  const displayName = languageId.charAt(0).toUpperCase() + languageId.slice(1);
   
-  // Get language info to display a friendly name
-  const languageInfo = getLanguageInfo(languageId);
-  const displayName = languageInfo?.names[0] || languageId;
+  // Optional: Show file path on hover
+  const title = filePath ? `${displayName} - ${filePath}` : displayName;
   
   return (
-    <div className="text-gray-300 text-sm px-2 py-1 flex items-center gap-1">
+    <div 
+      className="text-gray-300 text-sm px-2 py-1 flex items-center gap-1" 
+      title={title}
+    >
       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-      {displayName.charAt(0).toUpperCase() + displayName.slice(1)}
+      {displayName}
     </div>
   );
 }; 

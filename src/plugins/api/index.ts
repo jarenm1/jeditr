@@ -3,4 +3,4 @@ export { showNotification } from "./notification";
 export { showModal } from "./modal";
 export { editFile } from "./editFile";
 export { registerPluginKeybind } from "./registerKeybind";
-export * from "./language";
+export { registerLanguage } from "./language";
