@@ -1,10 +1,7 @@
 // Global Keybind Registry and Dispatcher
 // Usage: import { registerKeybind, unregisterKeybind } from './keybinds';
 
-import { useKeybindStore, Keybind } from "@store/useKeybindStore";
-import { useEditorStore } from "@editor/editorStore";
-import { EditorWorkspace } from "@editor/editorStore/workspace";
-import { useWorkspaceStore } from "@editor/editorStore/workspaceStore";
+import { useKeybindStore, Keybind } from "../store/useKeybindStore";
 
 // --- Keybinds as array of keys, e.g., ["Ctrl", "N"] ---
 
@@ -89,47 +86,7 @@ if (
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   (window as any).__keybindDispatcherAttached = true;
-
-  // Register workspace keybinds
-  registerKeybind({
-    id: "workspace.new",
-    keys: ["Ctrl", "N"],
-    description: "Open a new workspace",
-    handler: () => {
-      const { workspaces, addWorkspace } = useEditorStore.getState() as any;
-      console.log(
-        "[Keybind] Creating new workspace. Current workspaces:",
-        workspaces,
-      );
-      const nextNum = workspaces.length + 1;
-      addWorkspace(`Workspace ${nextNum}`);
-      console.log(
-        "[Keybind] New workspace created. Workspaces now:",
-        useWorkspaceStore.getState().workspaces,
-      );
-    },
-  });
-
-  registerKeybind({
-    id: "workspace.next",
-    keys: ["Ctrl", "Tab"],
-    description: "Switch to next workspace",
-    handler: () => {
-      const { workspaces, activeWorkspaceId, setActiveWorkspace } =
-        useEditorStore.getState() as any;
-      console.log(
-        "[Keybind] Switching workspace. Current:",
-        activeWorkspaceId,
-        "All:",
-        workspaces,
-      );
-      if (workspaces.length === 0) return;
-      const idx = workspaces.findIndex(
-        (ws: EditorWorkspace) => ws.id === activeWorkspaceId,
-      );
-      const nextIdx = (idx + 1) % workspaces.length;
-      setActiveWorkspace(workspaces[nextIdx].id);
-      console.log("[Keybind] Switched to workspace:", workspaces[nextIdx].id);
-    },
-  });
+  
+  // Note: Keybinds are now registered via settings.json and the API system
+  // See src/api/keybinds.ts for the new registration system
 }

@@ -27,5 +27,23 @@
     "leader": "<Space>",
     "fuzzyFinder": ["<leader>", "f"],
     "fileSearch": ["<leader>", "d"]
-  }
+  },
+  "keybinds": {
+    "workspace.new": {
+      "keys": ["Ctrl", "N"],
+      "enabled": true,
+      "description": "Create new workspace"
+    },
+    "workspace.next": {
+      "keys": ["Ctrl", "Tab"],
+      "enabled": true,
+      "description": "Switch to next workspace"
+    },
+    "notification.dismissAll": {
+      "keys": ["Escape"],
+      "enabled": true,
+      "description": "Dismiss all notifications"
+    }
+  },
+  "plugins": []}
 }

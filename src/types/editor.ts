@@ -15,5 +15,4 @@ export interface EditorState {
 export interface Theme {
   id: string; // unique identifier
   name: string; // display name
-  monaco: import("monaco-editor").editor.IStandaloneThemeData; // Monaco theme data
 }

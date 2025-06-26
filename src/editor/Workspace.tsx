@@ -4,7 +4,7 @@ import { EditorSettings } from "@editor/editorStore/settings";
 import { EditorPane } from "@editor/EditorPane";
 import { registerKeybind, unregisterKeybind } from "@services/keybinds";
 import { useEditorStore } from "@editor/editorStore/index";
-import { useLanguageActions } from "@ubar/ubarStore/languageStore";
+import { useLanguageActions } from "../api/editor/language";
 
 interface WorkspaceProps {
   workspace: EditorWorkspace;

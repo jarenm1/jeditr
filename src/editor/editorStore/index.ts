@@ -4,19 +4,17 @@ import { create } from "zustand";
 import {
   createWorkspaceSlice,
   WorkspaceSlice,
-} from "@editor/editorStore/workspace";
-import { createPaneSlice, PaneSlice } from "@editor/editorStore/pane";
+} from "./workspace";
+import { createPaneSlice, PaneSlice } from "./pane";
 import {
   createSettingsSlice,
   SettingsSlice,
-} from "@editor/editorStore/settings";
-import { createVimSlice, VimSlice } from "@editor/editorStore/vim";
+} from "./settings";
 
 export const useEditorStore = create<
-  WorkspaceSlice & PaneSlice & SettingsSlice & VimSlice
+  WorkspaceSlice & PaneSlice & SettingsSlice
 >((...a) => ({
   ...createWorkspaceSlice(...a),
   ...createPaneSlice(...a),
   ...createSettingsSlice(...a),
-  ...createVimSlice(...a),
 }));

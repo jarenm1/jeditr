@@ -1,6 +1,6 @@
 import React from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useEditorStore } from "@editor/editorStore/index";
+import { useEditorStore } from "../editor/editorStore";
 
 interface TitlebarProps {
   currentFileName: string;

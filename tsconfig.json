@@ -7,15 +7,7 @@
     "skipLibCheck": true,
     "paths": {
       "@components/*": ["./src/components/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@hooks/*": ["./src/hooks/*"],
-      "@services/*": ["./src/services/*"],
-      "@store/*": ["./src/store/*"],
-      "@language/*": ["./src/language/*"],
-      "@types/*": ["./src/types/*"],
-      "@editor/*": ["./src/editor/*"],
-      "@ubar/*": ["./src/ubar/*"],
-      "@plugins/*": ["./src/plugins/*"]
+      "@api/*": ["./src/api/*"],
     },
 
     /* Bundler mode */

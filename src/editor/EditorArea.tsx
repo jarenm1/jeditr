@@ -1,10 +1,8 @@
 import React from "react";
-import { useEditorStore } from "@editor/editorStore/index";
-import { Workspace } from "@editor/Workspace";
-import { EditorSettings } from "@editor/editorStore/settings";
+import { useEditorStore } from "./editorStore/index";
+import { Workspace } from "./Workspace";
 
 interface EditorAreaProps {
-  editorSettings: EditorSettings;
   contentMap: Record<string, any>;
 }
 
@@ -18,17 +16,27 @@ interface EditorAreaProps {
  * EditorArea is responsible for orchestrating the display of the user's current working context (workspace).
  */
 export const EditorArea: React.FC<EditorAreaProps> = ({
-  editorSettings,
   contentMap,
 }) => {
   const { workspaces, activeWorkspaceId } = useEditorStore();
-  const activeWorkspace = workspaces.find((ws) => ws.id === activeWorkspaceId);
+  const activeWorkspace = workspaces.find((ws: any) => ws.id === activeWorkspaceId);
+  
+  // Default editor settings
+  const defaultEditorSettings = {
+    fontSize: 14,
+    tabSize: 2,
+    insertSpaces: true,
+    wordWrap: true,
+    lineNumbers: true,
+    minimap: false,
+  };
+  
   return (
     <div className="flex flex-row w-full h-full grow">
       {activeWorkspace ? (
         <Workspace
           workspace={activeWorkspace}
-          editorSettings={editorSettings}
+          editorSettings={defaultEditorSettings}
           contentMap={contentMap}
         />
       ) : (
