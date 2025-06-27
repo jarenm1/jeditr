@@ -1,5 +1,5 @@
 // Tab management API - for managing editor tabs
-import type { EditorTab } from '../types'
+import type { EditorTab } from "../types";
 
 // This would integrate with your existing editor store
 // For now, we'll create a simple interface
@@ -9,8 +9,8 @@ import type { EditorTab } from '../types'
  */
 export function getActiveTab(): EditorTab | null {
   // This would integrate with your editor store
-  console.warn('getActiveTab not implemented - needs editor store integration')
-  return null
+  console.warn("getActiveTab not implemented - needs editor store integration");
+  return null;
 }
 
 /**
@@ -18,8 +18,8 @@ export function getActiveTab(): EditorTab | null {
  */
 export function getAllTabs(): EditorTab[] {
   // This would integrate with your editor store
-  console.warn('getAllTabs not implemented - needs editor store integration')
-  return []
+  console.warn("getAllTabs not implemented - needs editor store integration");
+  return [];
 }
 
 /**
@@ -27,8 +27,8 @@ export function getAllTabs(): EditorTab[] {
  */
 export function getTabById(id: string): EditorTab | null {
   // This would integrate with your editor store
-  console.warn('getTabById not implemented - needs editor store integration')
-  return null
+  console.warn("getTabById not implemented - needs editor store integration");
+  return null;
 }
 
 /**
@@ -36,23 +36,23 @@ export function getTabById(id: string): EditorTab | null {
  */
 export function getTabByPath(path: string): EditorTab | null {
   // This would integrate with your editor store
-  console.warn('getTabByPath not implemented - needs editor store integration')
-  return null
+  console.warn("getTabByPath not implemented - needs editor store integration");
+  return null;
 }
 
 /**
  * Open a new tab with the specified file
- * 
+ *
  * @example
  * ```typescript
  * try {
  *   // Open a file in a new tab
  *   const tab = await openTab('./src/main.ts')
  *   console.log(`Opened tab: ${tab.path}`)
- *   
+ *
  *   // Switch to the tab
  *   switchToTab(tab.id)
- *   
+ *
  *   // Check if file is dirty
  *   if (isTabDirty(tab.id)) {
  *     console.log('File has unsaved changes')
@@ -64,8 +64,8 @@ export function getTabByPath(path: string): EditorTab | null {
  */
 export async function openTab(path: string): Promise<EditorTab> {
   // This would integrate with your editor store and file reading
-  console.warn('openTab not implemented - needs editor store integration')
-  throw new Error('openTab not implemented')
+  console.warn("openTab not implemented - needs editor store integration");
+  throw new Error("openTab not implemented");
 }
 
 /**
@@ -73,7 +73,7 @@ export async function openTab(path: string): Promise<EditorTab> {
  */
 export function closeTab(id: string): void {
   // This would integrate with your editor store
-  console.warn('closeTab not implemented - needs editor store integration')
+  console.warn("closeTab not implemented - needs editor store integration");
 }
 
 /**
@@ -81,7 +81,9 @@ export function closeTab(id: string): void {
  */
 export function closeTabByPath(path: string): void {
   // This would integrate with your editor store
-  console.warn('closeTabByPath not implemented - needs editor store integration')
+  console.warn(
+    "closeTabByPath not implemented - needs editor store integration",
+  );
 }
 
 /**
@@ -89,7 +91,7 @@ export function closeTabByPath(path: string): void {
  */
 export function closeAllTabs(): void {
   // This would integrate with your editor store
-  console.warn('closeAllTabs not implemented - needs editor store integration')
+  console.warn("closeAllTabs not implemented - needs editor store integration");
 }
 
 /**
@@ -97,7 +99,9 @@ export function closeAllTabs(): void {
  */
 export function closeOtherTabs(): void {
   // This would integrate with your editor store
-  console.warn('closeOtherTabs not implemented - needs editor store integration')
+  console.warn(
+    "closeOtherTabs not implemented - needs editor store integration",
+  );
 }
 
 /**
@@ -105,7 +109,7 @@ export function closeOtherTabs(): void {
  */
 export async function saveTab(id: string): Promise<void> {
   // This would integrate with your editor store and file writing
-  console.warn('saveTab not implemented - needs editor store integration')
+  console.warn("saveTab not implemented - needs editor store integration");
 }
 
 /**
@@ -113,7 +117,7 @@ export async function saveTab(id: string): Promise<void> {
  */
 export async function saveAllTabs(): Promise<void> {
   // This would integrate with your editor store and file writing
-  console.warn('saveAllTabs not implemented - needs editor store integration')
+  console.warn("saveAllTabs not implemented - needs editor store integration");
 }
 
 /**
@@ -121,8 +125,8 @@ export async function saveAllTabs(): Promise<void> {
  */
 export function isTabDirty(id: string): boolean {
   // This would integrate with your editor store
-  console.warn('isTabDirty not implemented - needs editor store integration')
-  return false
+  console.warn("isTabDirty not implemented - needs editor store integration");
+  return false;
 }
 
 /**
@@ -130,8 +134,8 @@ export function isTabDirty(id: string): boolean {
  */
 export function getDirtyTabs(): EditorTab[] {
   // This would integrate with your editor store
-  console.warn('getDirtyTabs not implemented - needs editor store integration')
-  return []
+  console.warn("getDirtyTabs not implemented - needs editor store integration");
+  return [];
 }
 
 /**
@@ -139,7 +143,7 @@ export function getDirtyTabs(): EditorTab[] {
  */
 export function switchToTab(id: string): void {
   // This would integrate with your editor store
-  console.warn('switchToTab not implemented - needs editor store integration')
+  console.warn("switchToTab not implemented - needs editor store integration");
 }
 
 /**
@@ -147,7 +151,9 @@ export function switchToTab(id: string): void {
  */
 export function switchToNextTab(): void {
   // This would integrate with your editor store
-  console.warn('switchToNextTab not implemented - needs editor store integration')
+  console.warn(
+    "switchToNextTab not implemented - needs editor store integration",
+  );
 }
 
 /**
@@ -155,7 +161,9 @@ export function switchToNextTab(): void {
  */
 export function switchToPreviousTab(): void {
   // This would integrate with your editor store
-  console.warn('switchToPreviousTab not implemented - needs editor store integration')
+  console.warn(
+    "switchToPreviousTab not implemented - needs editor store integration",
+  );
 }
 
 /**
@@ -163,8 +171,8 @@ export function switchToPreviousTab(): void {
  */
 export function duplicateTab(id: string): EditorTab | null {
   // This would integrate with your editor store
-  console.warn('duplicateTab not implemented - needs editor store integration')
-  return null
+  console.warn("duplicateTab not implemented - needs editor store integration");
+  return null;
 }
 
 /**
@@ -172,7 +180,7 @@ export function duplicateTab(id: string): EditorTab | null {
  */
 export function moveTab(id: string, newIndex: number): void {
   // This would integrate with your editor store
-  console.warn('moveTab not implemented - needs editor store integration')
+  console.warn("moveTab not implemented - needs editor store integration");
 }
 
 /**
@@ -180,28 +188,28 @@ export function moveTab(id: string, newIndex: number): void {
  */
 export function toggleTabPin(id: string): void {
   // This would integrate with your editor store
-  console.warn('toggleTabPin not implemented - needs editor store integration')
+  console.warn("toggleTabPin not implemented - needs editor store integration");
 }
 
 /**
  * Get the number of open tabs
  */
 export function getTabCount(): number {
-  return getAllTabs().length
+  return getAllTabs().length;
 }
 
 /**
  * Check if any tabs are open
  */
 export function hasOpenTabs(): boolean {
-  return getTabCount() > 0
+  return getTabCount() > 0;
 }
 
 /**
  * Check if a file is already open in a tab
  */
 export function isFileOpen(path: string): boolean {
-  return getTabByPath(path) !== null
+  return getTabByPath(path) !== null;
 }
 
 /**
@@ -209,6 +217,6 @@ export function isFileOpen(path: string): boolean {
  */
 export function getTabIndex(id: string): number {
   // This would integrate with your editor store
-  console.warn('getTabIndex not implemented - needs editor store integration')
-  return -1
-} 
+  console.warn("getTabIndex not implemented - needs editor store integration");
+  return -1;
+}

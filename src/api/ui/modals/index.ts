@@ -1,3 +1,4 @@
+import type React from "react";
 import { addModal, findModalByPlugin, closeModalByPlugin } from "./modalStore";
 
 export function showModal(pluginName: string, content: React.ReactNode) {

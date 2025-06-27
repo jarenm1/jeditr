@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { nanoid } from "nanoid";
+import type { NotificationSeverity } from "./types";
 
 export type NotificationAction = {
   label: string;
@@ -11,7 +12,7 @@ export type Notification = {
   pluginName: string;
   message: string;
   timestamp: number;
-  severity?: "info" | "warning" | "error";
+  severity?: NotificationSeverity;
   action?: NotificationAction;
 };
 
@@ -189,4 +190,4 @@ export const registerActionHandler = (actionId: string, handler: () => void) =>
 export const unregisterActionHandler = (actionId: string) =>
   useNotificationStore.getState().unregisterActionHandler(actionId);
 export const executeAction = (actionId: string) =>
-  useNotificationStore.getState().executeAction(actionId); 
+  useNotificationStore.getState().executeAction(actionId);

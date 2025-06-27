@@ -1,70 +1,65 @@
 // LSP (Language Server Protocol) integration API
-import type { Position, Range } from '../types'
+import type { Position, Range, TextEdit } from "../types";
 
 export interface LSPServerConfig {
-  name: string
-  command: string
-  args: string[]
-  languages: string[]
-  initializationOptions?: any
-  settings?: any
+  name: string;
+  command: string;
+  args: string[];
+  languages: string[];
+  initializationOptions?: any;
+  settings?: any;
 }
 
 export interface CompletionItem {
-  label: string
-  kind: CompletionItemKind
-  detail?: string
-  documentation?: string
-  insertText?: string
-  filterText?: string
-  sortText?: string
-  additionalTextEdits?: TextEdit[]
-}
-
-interface TextEdit {
-  range: Range
-  newText: string
+  label: string;
+  kind: CompletionItemKind;
+  detail?: string;
+  documentation?: string;
+  insertText?: string;
+  filterText?: string;
+  sortText?: string;
+  additionalTextEdits?: TextEdit[];
 }
 
 export interface Diagnostic {
-  range: Range
-  severity: DiagnosticSeverity
-  message: string
-  code?: string | number
-  source?: string
-  relatedInformation?: DiagnosticRelatedInformation[]
+  range: Range;
+  severity: DiagnosticSeverity;
+  message: string;
+  code?: string | number;
+  source?: string;
+  relatedInformation?: DiagnosticRelatedInformation[];
 }
 
 export interface DiagnosticRelatedInformation {
-  location: Location
-  message: string
+  location: Location;
+  message: string;
 }
 
 export interface Location {
-  uri: string
-  range: Range
+  uri: string;
+  range: Range;
 }
 
 export interface Hover {
-  contents: string | string[]
-  range?: Range
+  contents: string | string[];
+  range?: Range;
 }
 
 export interface SignatureHelp {
-  signatures: SignatureInformation[]
-  activeSignature?: number
-  activeParameter?: number
+  signatures: SignatureInformation[];
+  activeSignature?: number;
+  activeParameter?: number;
 }
 
 export interface SignatureInformation {
-  label: string
-  documentation?: string
-  parameters?: ParameterInformation[]
+  label: string;
+  documentation?: string;
+  parameters?: ParameterInformation[];
 }
 
 export interface ParameterInformation {
-  label: string
-  documentation?: string
+  label: string;
+  documentation?: string;
 }
 
 export enum CompletionItemKind {
@@ -92,23 +87,23 @@ export enum CompletionItemKind {
   Struct = 22,
   Event = 23,
   Operator = 24,
-  TypeParameter = 25
+  TypeParameter = 25,
 }
 
 export enum DiagnosticSeverity {
   Error = 1,
   Warning = 2,
   Information = 3,
-  Hint = 4
+  Hint = 4,
 }
 
 // Registry of LSP servers
-const lspServers = new Map<string, LSPServerConfig>()
-const activeSessions = new Map<string, any>() // Server instances
+const lspServers = new Map<string, LSPServerConfig>();
+const activeSessions = new Map<string, any>(); // Server instances
 
 /**
  * Register a Language Server Protocol server configuration
- * 
+ *
  * @example
  * ```typescript
  * registerLSPServer({
@@ -122,10 +117,10 @@ const activeSessions = new Map<string, any>() // Server instances
  *     }
  *   }
  * })
- * 
+ *
  * // Start the server for a workspace
  * const sessionId = await startLSPServer('typescript-language-server', '/path/to/workspace')
- * 
+ *
  * // Request completions
  * const completions = await requestCompletions(
  *   './src/main.ts',
@@ -135,8 +130,8 @@ const activeSessions = new Map<string, any>() // Server instances
  * ```
  */
 export function registerLSPServer(config: LSPServerConfig): void {
-  lspServers.set(config.name, config)
-  console.log(`Registered LSP server: ${config.name}`)
+  lspServers.set(config.name, config);
+  console.log(`Registered LSP server: ${config.name}`);
 }
 
 /**
@@ -144,9 +139,9 @@ export function registerLSPServer(config: LSPServerConfig): void {
  */
 export function unregisterLSPServer(name: string): void {
   // Stop any active sessions for this server
-  stopLSPServer(name)
-  lspServers.delete(name)
-  console.log(`Unregistered LSP server: ${name}`)
+  stopLSPServer(name);
+  lspServers.delete(name);
+  console.log(`Unregistered LSP server: ${name}`);
 }
 
 /**
@@ -154,21 +149,21 @@ export function unregisterLSPServer(name: string): void {
  */
 export async function startLSPServer(
   serverName: string,
-  workspaceRoot: string
+  workspaceRoot: string,
 ): Promise<string> {
-  const config = lspServers.get(serverName)
+  const config = lspServers.get(serverName);
   if (!config) {
-    throw new Error(`LSP server not found: ${serverName}`)
+    throw new Error(`LSP server not found: ${serverName}`);
   }
 
   // This would need to be implemented in the backend
-  console.warn('LSP server starting not implemented in backend yet')
-  
+  console.warn("LSP server starting not implemented in backend yet");
+
   // Simulate server session ID
-  const sessionId = `${serverName}-${Date.now()}`
-  activeSessions.set(sessionId, { config, workspaceRoot })
-  
-  return sessionId
+  const sessionId = `${serverName}-${Date.now()}`;
+  activeSessions.set(sessionId, { config, workspaceRoot });
+
+  return sessionId;
 }
 
 /**
@@ -176,36 +171,38 @@ export async function startLSPServer(
  */
 export async function stopLSPServer(serverName: string): Promise<void> {
   // Find and stop all sessions for this server
-  const sessionsToStop: string[] = []
-  
+  const sessionsToStop: string[] = [];
+
   for (const [sessionId, session] of activeSessions) {
     if (session.config.name === serverName) {
-      sessionsToStop.push(sessionId)
+      sessionsToStop.push(sessionId);
     }
   }
-  
+
   for (const sessionId of sessionsToStop) {
-    activeSessions.delete(sessionId)
+    activeSessions.delete(sessionId);
   }
-  
-  console.warn('LSP server stopping not implemented in backend yet')
+
+  console.warn("LSP server stopping not implemented in backend yet");
 }
 
 /**
  * Get LSP server for a language
  */
-export function getLSPServerForLanguage(language: string): LSPServerConfig | undefined {
+export function getLSPServerForLanguage(
+  language: string,
+): LSPServerConfig | undefined {
   for (const config of lspServers.values()) {
     if (config.languages.includes(language)) {
-      return config
+      return config;
     }
   }
-  return undefined
+  return undefined;
 }
 
 /**
  * Request code completions from LSP server
- * 
+ *
  * @example
  * ```typescript
  * // Get completions at cursor position
@@ -214,7 +211,7 @@ export function getLSPServerForLanguage(language: string): LSPServerConfig | und
  *   { line: 10, column: 15 },
  *   'typescript'
  * )
- * 
+ *
  * completions.forEach(completion => {
  *   console.log(`${completion.label}: ${completion.detail}`)
  *   if (completion.kind === CompletionItemKind.Function) {
@@ -226,22 +223,22 @@ export function getLSPServerForLanguage(language: string): LSPServerConfig | und
 export async function requestCompletions(
   filePath: string,
   position: Position,
-  language: string
+  language: string,
 ): Promise<CompletionItem[]> {
-  const serverConfig = getLSPServerForLanguage(language)
+  const serverConfig = getLSPServerForLanguage(language);
   if (!serverConfig) {
-    console.warn(`No LSP server found for language: ${language}`)
-    return []
+    console.warn(`No LSP server found for language: ${language}`);
+    return [];
   }
 
   // This would need to be implemented to communicate with the actual LSP server
-  console.warn('LSP completions not implemented yet')
-  return []
+  console.warn("LSP completions not implemented yet");
+  return [];
 }
 
 /**
  * Request hover information from LSP server
- * 
+ *
  * @example
  * ```typescript
  * // Show hover documentation at cursor position
@@ -258,17 +255,17 @@ export async function requestCompletions(
 export async function requestHover(
   filePath: string,
   position: Position,
-  language: string
+  language: string,
 ): Promise<Hover | null> {
-  const serverConfig = getLSPServerForLanguage(language)
+  const serverConfig = getLSPServerForLanguage(language);
   if (!serverConfig) {
-    console.warn(`No LSP server found for language: ${language}`)
-    return null
+    console.warn(`No LSP server found for language: ${language}`);
+    return null;
   }
 
   // This would need to be implemented to communicate with the actual LSP server
-  console.warn('LSP hover not implemented yet')
-  return null
+  console.warn("LSP hover not implemented yet");
+  return null;
 }
 
 /**
@@ -276,17 +273,17 @@ export async function requestHover(
  */
 export async function requestDiagnostics(
   filePath: string,
-  language: string
+  language: string,
 ): Promise<Diagnostic[]> {
-  const serverConfig = getLSPServerForLanguage(language)
+  const serverConfig = getLSPServerForLanguage(language);
   if (!serverConfig) {
-    console.warn(`No LSP server found for language: ${language}`)
-    return []
+    console.warn(`No LSP server found for language: ${language}`);
+    return [];
   }
 
   // This would need to be implemented to communicate with the actual LSP server
-  console.warn('LSP diagnostics not implemented yet')
-  return []
+  console.warn("LSP diagnostics not implemented yet");
+  return [];
 }
 
 /**
@@ -295,17 +292,17 @@ export async function requestDiagnostics(
 export async function requestSignatureHelp(
   filePath: string,
   position: Position,
-  language: string
+  language: string,
 ): Promise<SignatureHelp | null> {
-  const serverConfig = getLSPServerForLanguage(language)
+  const serverConfig = getLSPServerForLanguage(language);
   if (!serverConfig) {
-    console.warn(`No LSP server found for language: ${language}`)
-    return null
+    console.warn(`No LSP server found for language: ${language}`);
+    return null;
   }
 
   // This would need to be implemented to communicate with the actual LSP server
-  console.warn('LSP signature help not implemented yet')
-  return null
+  console.warn("LSP signature help not implemented yet");
+  return null;
 }
 
 /**
@@ -314,17 +311,17 @@ export async function requestSignatureHelp(
 export async function gotoDefinition(
   filePath: string,
   position: Position,
-  language: string
+  language: string,
 ): Promise<Location[]> {
-  const serverConfig = getLSPServerForLanguage(language)
+  const serverConfig = getLSPServerForLanguage(language);
   if (!serverConfig) {
-    console.warn(`No LSP server found for language: ${language}`)
-    return []
+    console.warn(`No LSP server found for language: ${language}`);
+    return [];
   }
 
   // This would need to be implemented to communicate with the actual LSP server
-  console.warn('LSP goto definition not implemented yet')
-  return []
+  console.warn("LSP goto definition not implemented yet");
+  return [];
 }
 
 /**
@@ -334,17 +331,17 @@ export async function findReferences(
   filePath: string,
   position: Position,
   language: string,
-  includeDeclaration: boolean = false
+  includeDeclaration: boolean = false,
 ): Promise<Location[]> {
-  const serverConfig = getLSPServerForLanguage(language)
+  const serverConfig = getLSPServerForLanguage(language);
   if (!serverConfig) {
-    console.warn(`No LSP server found for language: ${language}`)
-    return []
+    console.warn(`No LSP server found for language: ${language}`);
+    return [];
   }
 
   // This would need to be implemented to communicate with the actual LSP server
-  console.warn('LSP find references not implemented yet')
-  return []
+  console.warn("LSP find references not implemented yet");
+  return [];
 }
 
 /**
@@ -352,17 +349,17 @@ export async function findReferences(
  */
 export async function formatDocument(
   filePath: string,
-  language: string
+  language: string,
 ): Promise<TextEdit[]> {
-  const serverConfig = getLSPServerForLanguage(language)
+  const serverConfig = getLSPServerForLanguage(language);
   if (!serverConfig) {
-    console.warn(`No LSP server found for language: ${language}`)
-    return []
+    console.warn(`No LSP server found for language: ${language}`);
+    return [];
   }
 
   // This would need to be implemented to communicate with the actual LSP server
-  console.warn('LSP document formatting not implemented yet')
-  return []
+  console.warn("LSP document formatting not implemented yet");
+  return [];
 }
 
 /**
@@ -370,34 +367,34 @@ export async function formatDocument(
  */
 export const CommonLSPServers: LSPServerConfig[] = [
   {
-    name: 'typescript-language-server',
-    command: 'typescript-language-server',
-    args: ['--stdio'],
-    languages: ['typescript', 'javascript']
+    name: "typescript-language-server",
+    command: "typescript-language-server",
+    args: ["--stdio"],
+    languages: ["typescript", "javascript"],
   },
   {
-    name: 'rust-analyzer',
-    command: 'rust-analyzer',
+    name: "rust-analyzer",
+    command: "rust-analyzer",
     args: [],
-    languages: ['rust']
+    languages: ["rust"],
   },
   {
-    name: 'pyright',
-    command: 'pyright-langserver',
-    args: ['--stdio'],
-    languages: ['python']
+    name: "pyright",
+    command: "pyright-langserver",
+    args: ["--stdio"],
+    languages: ["python"],
   },
   {
-    name: 'gopls',
-    command: 'gopls',
+    name: "gopls",
+    command: "gopls",
     args: [],
-    languages: ['go']
-  }
-]
+    languages: ["go"],
+  },
+];
 
 /**
  * Initialize with common LSP servers
  */
 export function initializeCommonLSPServers(): void {
-  CommonLSPServers.forEach(config => registerLSPServer(config))
-} 
+  CommonLSPServers.forEach((config) => registerLSPServer(config));
+}

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { PickerModal, PickerItem } from "./PickerModal";
-import { loadAllThemes, applyTheme, Theme } from "@services/themeLoader";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { PickerModal, type PickerItem } from "./PickerModal";
+import { loadAllThemes, applyTheme, type Theme } from "@services/themeLoader";
 
 export interface ThemeSelectorProps {
   isOpen: boolean;

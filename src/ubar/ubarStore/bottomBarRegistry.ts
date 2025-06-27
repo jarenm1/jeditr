@@ -1,4 +1,4 @@
-import { BottomBarPlugin } from "@plugins/types";
+import type { BottomBarPlugin } from "@plugins/types";
 import React from "react";
 
 export const bottomBarRegistry: BottomBarPlugin[] = [];

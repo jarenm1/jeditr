@@ -1,12 +1,12 @@
 // File search API
-import type { SearchResult, SearchOptions } from '../types'
-import { readFile } from './files'
-import { listFiles, listGitFiles } from './directories'
-import { invoke } from '@tauri-apps/api/core'
+import type { SearchResult, SearchOptions } from "../types";
+import { readFile } from "./files";
+import { listFiles, listGitFiles } from "./directories";
+import { invoke } from "@tauri-apps/api/core";
 
 /**
  * Fuzzy search is used to search for text in files
- * 
+ *
  * @example
  * ```typescript
  * results.forEach(result => {
@@ -17,9 +17,9 @@ import { invoke } from '@tauri-apps/api/core'
  */
 export async function searchInFiles(
   query: string,
-  options: SearchOptions = {}
+  options: SearchOptions = {},
 ): Promise<SearchResult[]> {
-  return invoke('fuzzy_search', { query, options })
+  return invoke("fuzzy_search", { query, options });
 }
 
 /**
@@ -27,7 +27,7 @@ export async function searchInFiles(
  */
 export async function searchFilesByName(
   query: string,
-  options: { caseSensitive?: boolean; regex?: boolean } = {}
+  options: { caseSensitive?: boolean; regex?: boolean } = {},
 ): Promise<string[]> {
-  return invoke('search_for_files', { query, options })
+  return invoke("search_for_files", { query, options });
 }

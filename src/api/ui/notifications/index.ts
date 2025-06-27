@@ -1,6 +1,21 @@
-// Notification API - enhanced from old plugin notification system
-import type { Notification, NotificationAction } from '../../types'
-import { 
+/**
+ * @fileoverview Notifications API
+ *
+ * API for displaying notifications to the user
+ *
+ * Fully working as of 2025-06-26
+ *
+ * @author @jarenm1
+ * @since 0.1.0
+ */
+
+import type {
+  Notification,
+  NotificationAction,
+  NotificationSeverity,
+} from "./types";
+
+import {
   addNotification as addNotificationToStore,
   removeNotification as removeNotificationFromStore,
   setFocusedNotification,
@@ -11,85 +26,75 @@ import {
   registerActionHandler,
   unregisterActionHandler,
   executeAction,
-  useNotificationStore
-} from './notificationStore'
+  useNotificationStore,
+} from "./notificationStore";
 
 /**
- * Display a notification to the user
- * 
+ * Display a notification to the user with optional action button
+ *
+ * @param pluginName - Name of the plugin showing the notification
+ * @param message - The notification message
+ * @param severity - Notification type (info, warning, error)
+ * @param action - Optional action button configuration with plugin namespacing
+ *
  * @example
  * ```typescript
  * // Simple notification
  * showNotification('myPlugin', 'File saved!', 'info')
- * 
- * // Notification with action
+ *
+ * // Notification with action button
  * showNotification('myPlugin', 'Update available', 'info', {
  *   label: 'Update Now',
  *   actionId: 'myPlugin.update'
  * })
- * 
- * // Using object syntax
- * showNotification({
- *   pluginName: 'myPlugin',
- *   message: 'Operation complete',
- *   severity: 'info'
- * })
+ *
+ * // Error notification
+ * showNotification('myPlugin', 'Failed to connect', 'error')
  * ```
+ *
+ * @since 0.1.0
  */
-export function showNotification(notification: Omit<Notification, 'id' | 'timestamp'>): void
 export function showNotification(
   pluginName: string,
   message: string,
-  severity?: 'info' | 'warning' | 'error',
-  action?: NotificationAction
-): void
-export function showNotification(
-  notificationOrPluginName: Omit<Notification, 'id' | 'timestamp'> | string,
-  message?: string,
-  severity: 'info' | 'warning' | 'error' = 'info',
-  action?: NotificationAction
+  severity: NotificationSeverity,
+  action?: NotificationAction,
 ): void {
-  if (typeof notificationOrPluginName === 'string') {
-    // Legacy plugin API call
-    addNotificationToStore({
-      pluginName: notificationOrPluginName,
-      message: message!,
-      severity,
-      action,
-      timestamp: new Date().getTime()
-    })
-  } else {
-    // New API call with full notification object
-    addNotificationToStore({
-      ...notificationOrPluginName,
-      timestamp: new Date().getTime()
-    })
-  }
+  addNotificationToStore({
+    pluginName,
+    message,
+    severity,
+    action,
+    timestamp: new Date().getTime(),
+  });
 }
 
 /**
- * Remove a notification by ID
+ * Remove a notification by its unique ID.
+ *
+ * @param id - The unique identifier of the notification to remove.
+ * @since 0.1.0
  */
 export function dismissNotification(id: string): void {
-  removeNotificationFromStore(id)
+  removeNotificationFromStore(id);
 }
 
 /**
  * Clear all notifications
  */
 export function clearNotifications(): void {
-  const notifications = useNotificationStore.getState().notifications
-  notifications.forEach(n => removeNotificationFromStore(n.id))
+  const notifications = useNotificationStore.getState().notifications;
+  notifications.forEach((n) => removeNotificationFromStore(n.id));
 }
 
 /**
  * Clear notifications from a specific plugin
  */
 export function clearPluginNotifications(pluginName: string): void {
-  const notifications = useNotificationStore.getState().notifications
+  const notifications = useNotificationStore.getState().notifications;
   notifications
-    .filter(n => n.pluginName === pluginName)
-    .forEach(n => removeNotificationFromStore(n.id))
+    .filter((n) => n.pluginName === pluginName)
+    .forEach((n) => removeNotificationFromStore(n.id));
 }
 
 /**
@@ -101,39 +106,44 @@ export const notificationNavigation = {
   focusFirst: focusFirstNotification,
   focusLast: focusLastNotification,
   setFocused: setFocusedNotification,
-}
+};
 
 /**
  * Register a handler for notification actions
  */
-export function registerNotificationActionHandler(actionId: string, handler: () => void): void {
-  registerActionHandler(actionId, handler)
+export function registerNotificationActionHandler(
+  actionId: string,
+  handler: () => void,
+): void {
+  registerActionHandler(actionId, handler);
 }
 
 /**
  * Unregister a notification action handler
  */
 export function unregisterNotificationActionHandler(actionId: string): void {
-  unregisterActionHandler(actionId)
+  unregisterActionHandler(actionId);
 }
 
 /**
  * Execute a notification action
  */
 export function executeNotificationAction(actionId: string): void {
-  executeAction(actionId)
+  executeAction(actionId);
 }
 
 /**
  * Get all current notifications
  */
 export function getNotifications(): Notification[] {
-  return useNotificationStore.getState().notifications
+  return useNotificationStore.getState().notifications;
 }
 
 /**
  * Get notifications from a specific plugin
  */
 export function getPluginNotifications(pluginName: string): Notification[] {
-  return useNotificationStore.getState().notifications.filter(n => n.pluginName === pluginName)
-} 
+  return useNotificationStore
+    .getState()
+    .notifications.filter((n) => n.pluginName === pluginName);
+}

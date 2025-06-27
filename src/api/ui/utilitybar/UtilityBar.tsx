@@ -1,9 +1,9 @@
-import React from "react";
+import type React from "react";
 import { useUtilityBarStore } from "./utilitybarStore";
 
 /**
  * Main UtilityBar component that renders all registered widgets
- * 
+ *
  * This replaces the old BottomBar component and uses the new widget registration system
  */
 export const UtilityBar: React.FC = () => {
@@ -18,4 +18,4 @@ export const UtilityBar: React.FC = () => {
       ))}
     </div>
   );
-}; 
+};

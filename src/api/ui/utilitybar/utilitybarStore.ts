@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import React from "react";
+import type React from "react";
 
 /**
  * Interface for a utility bar widget that appears in the bottom status bar.
  * Widgets are automatically sorted by order and can conflict-resolve by priority.
- * 
+ *
  * @since 0.1.0
  * @example
  * ```typescript
@@ -26,7 +26,7 @@ export interface UtilityBarWidget {
 /**
  * Store interface for the utility bar
  */
-interface UtilityBarStore {  
+interface UtilityBarStore {
   widgets: UtilityBarWidget[];
   register: (widget: UtilityBarWidget) => void;
   unregister: (id: string) => void;
@@ -38,33 +38,33 @@ interface UtilityBarStore {
  */
 export const useUtilityBarStore = create<UtilityBarStore>((set, get) => ({
   widgets: [],
-  
+
   register: (widget) =>
     set((state) => {
       const filtered = state.widgets.filter((w) => w.id !== widget.id);
-      
+
       const newWidgets = [...filtered, widget].sort(
-        (a, b) => (a.order ?? 0) - (b.order ?? 0)
+        (a, b) => (a.order ?? 0) - (b.order ?? 0),
       );
-      
+
       return { widgets: newWidgets };
     }),
-    
+
   unregister: (id) =>
     set((state) => ({
-      widgets: state.widgets.filter((w) => w.id !== id)
+      widgets: state.widgets.filter((w) => w.id !== id),
     })),
-    
+
   getSortedWidgets: () => {
     const state = get();
     return state.widgets.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  }
+  },
 }));
 
 /**
  * Register a widget to appear in the utility bar.
  * If a widget with the same ID already exists, it will be replaced.
- * 
+ *
  * @param widget - The widget configuration to register
  * @since 0.1.0
  * @example
@@ -82,7 +82,7 @@ export function registerUtilityBarWidget(widget: UtilityBarWidget): void {
 
 /**
  * Remove a widget from the utility bar by its ID.
- * 
+ *
  * @param id - The unique ID of the widget to remove
  * @since 0.1.0
  * @example

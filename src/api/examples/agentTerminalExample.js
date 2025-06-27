@@ -1,9 +1,9 @@
 /**
  * Example Agent Plugin - Terminal Reader
- * 
+ *
  * This demonstrates how an AI agent can use the terminal API to:
  * - Execute commands and read output
- * - Monitor build processes  
+ * - Monitor build processes
  * - Analyze command results
  * - Interact with CLI tools programmatically
  */
@@ -13,8 +13,8 @@
 
 class AgentTerminalExample {
   constructor(api) {
-    this.api = api
-    this.sessionId = null
+    this.api = api;
+    this.sessionId = null;
   }
 
   /**
@@ -24,16 +24,16 @@ class AgentTerminalExample {
     try {
       // Create a new terminal session
       const session = await this.api.terminal.createTerminalSession({
-        workingDirectory: '/path/to/project'
-      })
-      
-      this.sessionId = session.sessionId
-      console.log(`Agent initialized terminal session: ${this.sessionId}`)
-      
-      return session
+        workingDirectory: "/path/to/project",
+      });
+
+      this.sessionId = session.sessionId;
+      console.log(`Agent initialized terminal session: ${this.sessionId}`);
+
+      return session;
     } catch (error) {
-      console.error('Failed to initialize terminal session:', error)
-      throw error
+      console.error("Failed to initialize terminal session:", error);
+      throw error;
     }
   }
 
@@ -42,33 +42,37 @@ class AgentTerminalExample {
    */
   async runAndAnalyzeCommand(command) {
     if (!this.sessionId) {
-      await this.initializeSession()
+      await this.initializeSession();
     }
 
     try {
-      console.log(`Executing: ${command}`)
-      
+      console.log(`Executing: ${command}`);
+
       // Execute the command and wait for completion
-      const result = await this.api.terminal.executeCommand(this.sessionId, command, {
-        timeoutMs: 30000,
-        captureOutput: true
-      })
+      const result = await this.api.terminal.executeCommand(
+        this.sessionId,
+        command,
+        {
+          timeoutMs: 30000,
+          captureOutput: true,
+        },
+      );
 
       // Analyze the output
-      const analysis = this.analyzeOutput(result)
-      
+      const analysis = this.analyzeOutput(result);
+
       return {
         command,
         result,
-        analysis
-      }
+        analysis,
+      };
     } catch (error) {
-      console.error(`Command failed: ${command}`, error)
+      console.error(`Command failed: ${command}`, error);
       return {
         command,
         error: error.toString(),
-        analysis: { success: false, errors: [error.toString()] }
-      }
+        analysis: { success: false, errors: [error.toString()] },
+      };
     }
   }
 
@@ -77,64 +81,69 @@ class AgentTerminalExample {
    */
   async monitorProcess(command, progressCallback) {
     if (!this.sessionId) {
-      await this.initializeSession()
+      await this.initializeSession();
     }
 
     try {
       // Start the command without waiting for completion
       await this.api.terminal.executeCommand(this.sessionId, command, {
-        waitForCompletion: false
-      })
+        waitForCompletion: false,
+      });
 
       // Monitor output in real-time
-      let lastLineNumber = 0
-      const pollInterval = 1000 // Check every second
+      let lastLineNumber = 0;
+      const pollInterval = 1000; // Check every second
 
       const monitor = setInterval(async () => {
         try {
           // Read only new output
-          const newOutput = await this.api.terminal.readTerminalOutput(this.sessionId, {
-            startLine: lastLineNumber,
-            onlyNew: true
-          })
+          const newOutput = await this.api.terminal.readTerminalOutput(
+            this.sessionId,
+            {
+              startLine: lastLineNumber,
+              onlyNew: true,
+            },
+          );
 
           if (newOutput.length > 0) {
             // Update progress
-            lastLineNumber = Math.max(...newOutput.map(o => o.lineNumber)) + 1
-            
+            lastLineNumber =
+              Math.max(...newOutput.map((o) => o.lineNumber)) + 1;
+
             // Analyze new output for completion or errors
-            const analysis = this.analyzeOutput({ output: newOutput })
-            
+            const analysis = this.analyzeOutput({ output: newOutput });
+
             // Call progress callback
             if (progressCallback) {
               progressCallback({
                 newOutput,
                 analysis,
-                isComplete: analysis.isComplete || analysis.hasFailed
-              })
+                isComplete: analysis.isComplete || analysis.hasFailed,
+              });
             }
 
             // Stop monitoring if process is complete
             if (analysis.isComplete || analysis.hasFailed) {
-              clearInterval(monitor)
+              clearInterval(monitor);
             }
           }
 
           // Check if command is still running
-          const isRunning = await this.api.terminal.isCommandRunning(this.sessionId)
+          const isRunning = await this.api.terminal.isCommandRunning(
+            this.sessionId,
+          );
           if (!isRunning) {
-            clearInterval(monitor)
-            progressCallback?.({ isComplete: true })
+            clearInterval(monitor);
+            progressCallback?.({ isComplete: true });
           }
         } catch (error) {
-          console.error('Monitor error:', error)
-          clearInterval(monitor)
+          console.error("Monitor error:", error);
+          clearInterval(monitor);
         }
-      }, pollInterval)
-
+      }, pollInterval);
     } catch (error) {
-      console.error('Failed to start monitoring:', error)
-      throw error
+      console.error("Failed to start monitoring:", error);
+      throw error;
     }
   }
 
@@ -142,9 +151,12 @@ class AgentTerminalExample {
    * Analyze command output for success/failure patterns
    */
   analyzeOutput(result) {
-    const output = result.output || []
-    const allText = output.map(o => o.content).join('\n').toLowerCase()
-    
+    const output = result.output || [];
+    const allText = output
+      .map((o) => o.content)
+      .join("\n")
+      .toLowerCase();
+
     // Pattern matching for common scenarios
     const patterns = {
       success: [
@@ -152,7 +164,7 @@ class AgentTerminalExample {
         /compilation\s+complete/,
         /tests?\s+passed/,
         /installation\s+complete/,
-        /done/
+        /done/,
       ],
       errors: [
         /error[:;]/,
@@ -160,87 +172,92 @@ class AgentTerminalExample {
         /compilation\s+failed/,
         /tests?\s+failed/,
         /cannot\s+find/,
-        /permission\s+denied/
+        /permission\s+denied/,
       ],
-      warnings: [
-        /warning[:;]/,
-        /deprecated/,
-        /caution/
-      ]
-    }
+      warnings: [/warning[:;]/, /deprecated/, /caution/],
+    };
 
     const analysis = {
-      success: patterns.success.some(p => p.test(allText)),
-      hasErrors: patterns.errors.some(p => p.test(allText)),
-      hasWarnings: patterns.warnings.some(p => p.test(allText)),
+      success: patterns.success.some((p) => p.test(allText)),
+      hasErrors: patterns.errors.some((p) => p.test(allText)),
+      hasWarnings: patterns.warnings.some((p) => p.test(allText)),
       isComplete: false,
       hasFailed: false,
       errors: [],
-      warnings: []
-    }
+      warnings: [],
+    };
 
     // Extract specific error and warning lines
-    output.forEach(line => {
-      const content = line.content.toLowerCase()
-      if (patterns.errors.some(p => p.test(content))) {
-        analysis.errors.push(line.content)
+    output.forEach((line) => {
+      const content = line.content.toLowerCase();
+      if (patterns.errors.some((p) => p.test(content))) {
+        analysis.errors.push(line.content);
       }
-      if (patterns.warnings.some(p => p.test(content))) {
-        analysis.warnings.push(line.content)
+      if (patterns.warnings.some((p) => p.test(content))) {
+        analysis.warnings.push(line.content);
       }
-    })
+    });
 
     // Determine completion status
-    analysis.isComplete = analysis.success || result.exitStatus === 0
-    analysis.hasFailed = analysis.hasErrors || (result.exitStatus !== undefined && result.exitStatus !== 0)
+    analysis.isComplete = analysis.success || result.exitStatus === 0;
+    analysis.hasFailed =
+      analysis.hasErrors ||
+      (result.exitStatus !== undefined && result.exitStatus !== 0);
 
-    return analysis
+    return analysis;
   }
 
   /**
    * Example: Build project and analyze results
    */
   async buildProject() {
-    console.log('🔨 Starting project build...')
-    
-    const buildResult = await this.runAndAnalyzeCommand('npm run build')
-    
+    console.log("🔨 Starting project build...");
+
+    const buildResult = await this.runAndAnalyzeCommand("npm run build");
+
     if (buildResult.analysis.success) {
-      console.log('✅ Build successful!')
-      
+      console.log("✅ Build successful!");
+
       // Show success notification
-      this.api.showNotification('Agent', 'Build completed successfully!', 'info')
+      this.api.showNotification(
+        "Agent",
+        "Build completed successfully!",
+        "info",
+      );
     } else {
-      console.log('❌ Build failed!')
-      console.log('Errors:', buildResult.analysis.errors)
-      
+      console.log("❌ Build failed!");
+      console.log("Errors:", buildResult.analysis.errors);
+
       // Show error notification with details
       this.api.showNotification(
-        'Agent', 
-        `Build failed: ${buildResult.analysis.errors.join(', ')}`, 
-        'error'
-      )
+        "Agent",
+        `Build failed: ${buildResult.analysis.errors.join(", ")}`,
+        "error",
+      );
     }
 
-    return buildResult
+    return buildResult;
   }
 
   /**
    * Example: Run tests and monitor progress
    */
   async runTests() {
-    console.log('🧪 Running tests...')
-    
-    await this.monitorProcess('npm test', (progress) => {
+    console.log("🧪 Running tests...");
+
+    await this.monitorProcess("npm test", (progress) => {
       if (progress.newOutput) {
-        console.log('New test output:', progress.newOutput.map(o => o.content))
+        console.log(
+          "New test output:",
+          progress.newOutput.map((o) => o.content),
+        );
       }
-      
+
       if (progress.isComplete) {
-        console.log('✅ Tests completed!')
-        this.api.showNotification('Agent', 'Tests completed!', 'info')
+        console.log("✅ Tests completed!");
+        this.api.showNotification("Agent", "Tests completed!", "info");
       }
-    })
+    });
   }
 
   /**
@@ -249,29 +266,29 @@ class AgentTerminalExample {
   async cleanup() {
     if (this.sessionId) {
       try {
-        await this.api.terminal.terminateTerminalSession(this.sessionId)
-        console.log('Terminal session cleaned up')
+        await this.api.terminal.terminateTerminalSession(this.sessionId);
+        console.log("Terminal session cleaned up");
       } catch (error) {
-        console.error('Failed to cleanup session:', error)
+        console.error("Failed to cleanup session:", error);
       }
     }
   }
 }
 
 // Example usage in a plugin worker
-self.onmessage = function(event) {
-  const { type, api } = event.data
-  
-  if (type === 'init') {
+self.onmessage = (event) => {
+  const { type, api } = event.data;
+
+  if (type === "init") {
     // Initialize the agent
-    const agent = new AgentTerminalExample(api)
-    
+    const agent = new AgentTerminalExample(api);
+
     // Example: Auto-build when files change
-    agent.buildProject()
-    
-    // Example: Run tests periodically  
+    agent.buildProject();
+
+    // Example: Run tests periodically
     setInterval(() => {
-      agent.runTests()
-    }, 300000) // Every 5 minutes
+      agent.runTests();
+    }, 300000); // Every 5 minutes
   }
-} 
+};

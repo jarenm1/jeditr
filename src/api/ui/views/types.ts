@@ -1,8 +1,8 @@
-import React from 'react';
+import type React from "react";
 
 /**
  * Props passed to view render functions for both default and plugin views.
- * 
+ *
  * @since 0.1.0
  * @example
  * ```typescript
@@ -13,8 +13,8 @@ import React from 'react';
  */
 export interface ViewProps {
   filePath: string;
-  content: any;
   contentType: string;
+  content: any;
   onContentChange?: (content: any) => void;
   viewId: string;
 }
@@ -22,7 +22,7 @@ export interface ViewProps {
 /**
  * Default view configuration for built-in views that run on the main thread.
  * These are typically lightweight React components for common file types.
- * 
+ *
  * @since 0.1.0
  * @example
  * ```typescript
@@ -43,7 +43,7 @@ export interface DefaultView {
 /**
  * Plugin view configuration for complex views that run in web workers.
  * These provide full control over UI rendering via HTML/CSS/JS generation.
- * 
+ *
  * @since 0.1.0
  * @example
  * ```typescript
@@ -71,7 +71,7 @@ export interface PluginView {
 /**
  * Result object sent from plugin web workers to update the main thread UI.
  * Supports full rendering, partial updates, and CSS injection.
- * 
+ *
  * @since 0.1.0
  * @example
  * ```typescript
@@ -84,7 +84,7 @@ export interface PluginView {
  *     'button-click': (event) => console.log('Clicked!')
  *   }
  * };
- * 
+ *
  * // Partial update
  * const updateResult: PluginViewRenderResult = {
  *   type: 'update-html',
@@ -94,7 +94,7 @@ export interface PluginView {
  * ```
  */
 export interface PluginViewRenderResult {
-  type: 'render' | 'update-html' | 'update-css';
+  type: "render" | "update-html" | "update-css";
   html?: string;
   css?: string;
   eventHandlers?: Record<string, (event: any) => void>;
@@ -104,7 +104,7 @@ export interface PluginViewRenderResult {
 /**
  * Data structure for registering a new plugin view.
  * This is sent from plugin workers to register their view capabilities.
- * 
+ *
  * @since 0.1.0
  * @example
  * ```typescript
@@ -127,4 +127,4 @@ export interface PluginViewRegistration {
   fileTypes: string[];
   mimeTypes?: string[];
   priority?: number;
-} 
+}

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import type React from "react";
+import { useEffect, useRef } from "react";
 import {
   useNotificationStore,
   removeNotification,
@@ -7,6 +8,7 @@ import {
   focusPreviousNotification,
   executeAction,
 } from "./notificationStore";
+import type { Notification } from "./types";
 
 const severityIcon = {
   info: (
@@ -86,7 +88,7 @@ const severityIcon = {
 };
 
 interface NotificationItemProps {
-  notification: any;
+  notification: Notification;
   isFocused: boolean;
   onFocus: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;

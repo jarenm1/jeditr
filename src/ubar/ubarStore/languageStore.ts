@@ -12,28 +12,28 @@ interface PaneFileInfo {
 interface LanguageState {
   // Map pane ID to file and language information
   paneInfo: Record<string, PaneFileInfo>;
-  
+
   // Actions for managing pane state
   setPaneLanguage: (paneId: string, languageId: string) => void;
   setPaneFile: (paneId: string, filePath: string, languageId: string) => void;
   setPaneContentType: (paneId: string, contentType: string) => void;
   setPaneLoadingState: (paneId: string, isLoading: boolean) => void;
   updatePaneInfo: (paneId: string, updates: Partial<PaneFileInfo>) => void;
-  
+
   // Getters
   getPaneLanguage: (paneId: string) => string | undefined;
   getPaneFilePath: (paneId: string) => string | undefined;
   getPaneContentType: (paneId: string) => string | undefined;
   isPaneLanguageLoading: (paneId: string) => boolean;
   getPaneInfo: (paneId: string) => PaneFileInfo | undefined;
-  
+
   // Cleanup
   removePaneInfo: (paneId: string) => void;
-  
+
   // Bulk operations
   getAllPaneLanguages: () => Record<string, string>;
   getPanesByLanguage: (languageId: string) => string[];
-  
+
   // File switching detection
   isFileChanged: (paneId: string, newFilePath: string) => boolean;
 }
@@ -41,7 +41,7 @@ interface LanguageState {
 export const useLanguageStore = create<LanguageState>()(
   subscribeWithSelector((set, get) => ({
     paneInfo: {},
-    
+
     setPaneLanguage: (paneId: string, languageId: string) => {
       set((state) => ({
         paneInfo: {
@@ -54,7 +54,7 @@ export const useLanguageStore = create<LanguageState>()(
         },
       }));
     },
-    
+
     setPaneFile: (paneId: string, filePath: string, languageId: string) => {
       set((state) => ({
         paneInfo: {
@@ -63,14 +63,14 @@ export const useLanguageStore = create<LanguageState>()(
             ...state.paneInfo[paneId],
             filePath,
             languageId,
-            contentType: 'editor', // Default for files
+            contentType: "editor", // Default for files
             isLoading: false,
             lastUpdated: Date.now(),
           },
         },
       }));
     },
-    
+
     setPaneContentType: (paneId: string, contentType: string) => {
       set((state) => ({
         paneInfo: {
@@ -83,7 +83,7 @@ export const useLanguageStore = create<LanguageState>()(
         },
       }));
     },
-    
+
     setPaneLoadingState: (paneId: string, isLoading: boolean) => {
       set((state) => ({
         paneInfo: {
@@ -96,7 +96,7 @@ export const useLanguageStore = create<LanguageState>()(
         },
       }));
     },
-    
+
     updatePaneInfo: (paneId: string, updates: Partial<PaneFileInfo>) => {
       set((state) => ({
         paneInfo: {
@@ -109,28 +109,28 @@ export const useLanguageStore = create<LanguageState>()(
         },
       }));
     },
-    
+
     // Getters
     getPaneLanguage: (paneId: string) => {
       return get().paneInfo[paneId]?.languageId;
     },
-    
+
     getPaneFilePath: (paneId: string) => {
       return get().paneInfo[paneId]?.filePath;
     },
-    
+
     getPaneContentType: (paneId: string) => {
       return get().paneInfo[paneId]?.contentType;
     },
-    
+
     isPaneLanguageLoading: (paneId: string) => {
       return get().paneInfo[paneId]?.isLoading || false;
     },
-    
+
     getPaneInfo: (paneId: string) => {
       return get().paneInfo[paneId];
     },
-    
+
     // Cleanup
     removePaneInfo: (paneId: string) => {
       set((state) => {
@@ -140,32 +140,32 @@ export const useLanguageStore = create<LanguageState>()(
         };
       });
     },
-    
+
     // Bulk operations
     getAllPaneLanguages: () => {
       const state = get();
       const result: Record<string, string> = {};
-      
+
       Object.entries(state.paneInfo).forEach(([paneId, info]) => {
         result[paneId] = info.languageId;
       });
-      
+
       return result;
     },
-    
+
     getPanesByLanguage: (languageId: string) => {
       const state = get();
       return Object.entries(state.paneInfo)
         .filter(([_, info]) => info.languageId === languageId)
         .map(([paneId, _]) => paneId);
     },
-    
+
     // File switching detection
     isFileChanged: (paneId: string, newFilePath: string) => {
       const currentInfo = get().paneInfo[paneId];
       return currentInfo?.filePath !== newFilePath;
     },
-  }))
+  })),
 );
 
 // ============================================================================
@@ -227,4 +227,4 @@ export function useLanguageActions() {
     removePaneInfo: state.removePaneInfo,
     isFileChanged: state.isFileChanged,
   }));
-} 
+}

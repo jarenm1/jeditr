@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { PickerModal, PickerItem } from "./PickerModal";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { PickerModal, type PickerItem } from "./PickerModal";
 import { invoke } from "@tauri-apps/api/core";
 
 export interface FileSelectorProps {

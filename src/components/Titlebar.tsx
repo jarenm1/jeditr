@@ -1,6 +1,6 @@
-import React from "react";
+import type React from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useEditorStore } from "../editor/editorStore";
+import { useWorkbenchStore } from "../store/workbench";
 
 interface TitlebarProps {
   currentFileName: string;
@@ -12,33 +12,12 @@ const Titlebar: React.FC<TitlebarProps> = ({ currentFileName, isDirty }) => {
   const handleMaximize = () => getCurrentWindow().toggleMaximize();
   const handleClose = () => getCurrentWindow().close();
 
-  const { workspaces, activeWorkspaceId, setActiveWorkspace } =
-    useEditorStore();
 
   return (
     <div
       className="h-10 w-full flex items-center select-none border-b px-2 relative"
       style={{ borderColor: "var(--theme-border-secondary)" }}
     >
-      {/* Left: Workspace Switcher */}
-      <div
-        className="flex gap-2 flex-shrink-0 z-10 pointer-events-auto"
-        style={{ WebkitAppRegion: "no-drag" } as any}
-      >
-        {workspaces.map((ws, idx) => (
-          <button
-            key={ws.id}
-            onClick={(e) => {
-              e.stopPropagation();
-              setActiveWorkspace(ws.id);
-            }}
-            className={`btn btn-sm font-courier-prime ${ws.id === activeWorkspaceId ? "btn-primary" : ""}`}
-            style={{ minWidth: 28 }}
-          >
-            {idx + 1}
-          </button>
-        ))}
-      </div>
       {/* Drag Region (center, flex-1) */}
       <div
         className="flex-1 h-full titlebar-drag-region flex items-center justify-center"

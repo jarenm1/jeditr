@@ -1,26 +1,26 @@
 /**
  * Shared types used across API modules
- * 
+ *
  * These types provide a consistent interface for all API operations
  * and ensure type safety throughout the application.
  */
 
-/** 
+/**
  * Represents a position in a text document (0-based indexing)
- * 
+ *
  * @example
  * ```typescript
  * const position: Position = { line: 0, column: 5 } // First line, 6th character
  * ```
  */
 export interface Position {
-  line: number
-  column: number
+  line: number;
+  column: number;
 }
 
 /**
  * Represents a range of text in a document
- * 
+ *
  * @example
  * ```typescript
  * const range: Range = {
@@ -30,13 +30,13 @@ export interface Position {
  * ```
  */
 export interface Range {
-  start: Position
-  end: Position
+  start: Position;
+  end: Position;
 }
 
 /**
  * Represents a text selection with both range and content
- * 
+ *
  * @example
  * ```typescript
  * const selection: Selection = {
@@ -46,16 +46,16 @@ export interface Range {
  * ```
  */
 export interface Selection {
-  range: Range
-  text: string
+  range: Range;
+  text: string;
 }
 
 /**
  * Comprehensive file system metadata information
- * 
+ *
  * Contains all essential information about a file or directory,
  * including size, modification time, and detected programming language.
- * 
+ *
  * @example
  * ```typescript
  * const fileInfo: FileMetadata = {
@@ -70,46 +70,46 @@ export interface Selection {
  */
 export interface FileMetadata {
   /** Full file path relative to workspace root */
-  path: string
+  path: string;
   /** File name with extension (e.g., 'main.ts') */
-  name: string
+  name: string;
   /** File size in bytes */
-  size: number
+  size: number;
   /** Date when file was last modified */
-  lastModified: Date
+  lastModified: Date;
   /** Whether this entry represents a directory */
-  isDirectory: boolean
+  isDirectory: boolean;
   /** Auto-detected programming language based on file extension */
-  language?: string
+  language?: string;
 }
 
 export interface DirectoryEntry {
-  path: string
-  name: string
-  type: 'file' | 'directory'
-  children?: DirectoryEntry[]
+  path: string;
+  name: string;
+  type: "file" | "directory";
+  children?: DirectoryEntry[];
 }
 
 // Editor types
 export interface EditorTab {
-  id: string
-  path: string
-  content: string
-  isDirty: boolean
-  language?: string
-  selection?: Selection
+  id: string;
+  path: string;
+  content: string;
+  isDirty: boolean;
+  language?: string;
+  selection?: Selection;
 }
 
 export interface Language {
-  name: string
-  extensions: string[]
-  defaultFileExtension?: string
-  languageServerId?: string
+  name: string;
+  extensions: string[];
+  defaultFileExtension?: string;
+  languageServerId?: string;
 }
 
 /**
  * Action button configuration for notifications
- * 
+ *
  * @example
  * ```typescript
  * const action: NotificationAction = {
@@ -119,13 +119,13 @@ export interface Language {
  * ```
  */
 export interface NotificationAction {
-  label: string
-  actionId: string
+  label: string;
+  actionId: string;
 }
 
 /**
  * Notification configuration
- * 
+ *
  * @example
  * ```typescript
  * const notification: Notification = {
@@ -140,77 +140,77 @@ export interface NotificationAction {
  * ```
  */
 export interface Notification {
-  id?: string
-  pluginName: string
-  message: string
-  timestamp?: number
-  severity?: 'info' | 'warning' | 'error'
-  action?: NotificationAction
+  id?: string;
+  pluginName: string;
+  message: string;
+  timestamp?: number;
+  severity?: "info" | "warning" | "error";
+  action?: NotificationAction;
 }
 
 export interface Modal {
-  id?: string
-  pluginName: string
-  content: React.ReactNode
-  title?: string
-  closeable?: boolean
+  id?: string;
+  pluginName: string;
+  content: React.ReactNode;
+  title?: string;
+  closeable?: boolean;
 }
 
 // Keybind types
 export interface Keybind {
-  id: string
-  keys: string[]
-  description?: string
-  handler: () => void
+  id: string;
+  keys: string[];
+  description?: string;
+  handler: () => void;
 }
 
 export interface PluginKeybind {
-  id: string
-  keys: string[]
-  description?: string
-  action: string
+  id: string;
+  keys: string[];
+  description?: string;
+  action: string;
 }
 
 // Workspace types
 export interface Workspace {
-  id: string
-  name: string
-  path: string
-  lastOpened: Date
-  settings?: WorkspaceSettings
+  id: string;
+  name: string;
+  path: string;
+  lastOpened: Date;
+  settings?: WorkspaceSettings;
 }
 
 export interface WorkspaceSettings {
-  theme?: string
-  fontSize?: number
-  tabSize?: number
-  insertSpaces?: boolean
-  wordWrap?: boolean
-  lineNumbers?: boolean
-  minimap?: boolean
+  theme?: string;
+  fontSize?: number;
+  tabSize?: number;
+  insertSpaces?: boolean;
+  wordWrap?: boolean;
+  lineNumbers?: boolean;
+  minimap?: boolean;
 }
 
 // Search types
 export interface SearchResult {
-  path: string
-  line: number
-  column: number
-  text: string
-  context: string
+  path: string;
+  line: number;
+  column: number;
+  text: string;
+  context: string;
 }
 
 export interface SearchOptions {
-  caseSensitive?: boolean
-  wholeWord?: boolean
-  regex?: boolean
-  includePattern?: string
-  excludePattern?: string
-  maxResults?: number
+  caseSensitive?: boolean;
+  wholeWord?: boolean;
+  regex?: boolean;
+  includePattern?: string;
+  excludePattern?: string;
+  maxResults?: number;
 }
 
 /**
  * Represents a text edit operation at a specific position/range
- * 
+ *
  * @example
  * ```typescript
  * const edit: TextEdit = {
@@ -220,8 +220,8 @@ export interface SearchOptions {
  * ```
  */
 export interface TextEdit {
-  range: Range
-  newText: string
+  range: Range;
+  newText: string;
 }
 
 /**
@@ -229,9 +229,9 @@ export interface TextEdit {
  */
 export interface TextEditOptions {
   /** Whether to validate that the range exists before applying */
-  validateRange?: boolean
+  validateRange?: boolean;
   /** Whether to create the file if it doesn't exist */
-  createIfNotExists?: boolean
+  createIfNotExists?: boolean;
 }
 
 /**
@@ -239,19 +239,19 @@ export interface TextEditOptions {
  */
 export interface TerminalSession {
   /** Unique session identifier */
-  sessionId: string
+  sessionId: string;
   /** Whether the session is currently active */
-  isActive: boolean
+  isActive: boolean;
   /** Shell command being run */
-  shell: string
+  shell: string;
   /** Process ID of the shell */
-  pid?: number
+  pid?: number;
   /** Session creation timestamp */
-  startTime: Date
+  startTime: Date;
   /** Session end timestamp (if terminated) */
-  endTime?: Date
+  endTime?: Date;
   /** Exit status (if terminated) */
-  exitStatus?: number
+  exitStatus?: number;
 }
 
 /**
@@ -259,15 +259,15 @@ export interface TerminalSession {
  */
 export interface TerminalOutput {
   /** Session that produced this output */
-  sessionId: string
+  sessionId: string;
   /** Output content */
-  content: string
+  content: string;
   /** Whether this is stderr (true) or stdout (false) */
-  isError: boolean
+  isError: boolean;
   /** Timestamp when output was received */
-  timestamp: Date
+  timestamp: Date;
   /** Line number in the session (0-based) */
-  lineNumber: number
+  lineNumber: number;
 }
 
 /**
@@ -275,19 +275,19 @@ export interface TerminalOutput {
  */
 export interface TerminalReadOptions {
   /** Maximum number of lines to return */
-  maxLines?: number
+  maxLines?: number;
   /** Whether to include stderr output */
-  includeErrors?: boolean
+  includeErrors?: boolean;
   /** Whether to include stdout output */
-  includeOutput?: boolean
+  includeOutput?: boolean;
   /** Start reading from this line number (0-based) */
-  startLine?: number
+  startLine?: number;
   /** Filter output by content (regex supported) */
-  filter?: string
+  filter?: string;
   /** Whether to treat filter as regex */
-  useRegex?: boolean
+  useRegex?: boolean;
   /** Whether to return only new output since last read */
-  onlyNew?: boolean
+  onlyNew?: boolean;
 }
 
 /**
@@ -295,17 +295,17 @@ export interface TerminalReadOptions {
  */
 export interface TerminalCommandResult {
   /** The command that was executed */
-  command: string
+  command: string;
   /** Session where command was executed */
-  sessionId: string
+  sessionId: string;
   /** All output lines from the command */
-  output: TerminalOutput[]
+  output: TerminalOutput[];
   /** Exit status (if command completed) */
-  exitStatus?: number
+  exitStatus?: number;
   /** Whether the command is still running */
-  isRunning: boolean
+  isRunning: boolean;
   /** Command execution start time */
-  startTime: Date
+  startTime: Date;
   /** Command completion time (if finished) */
-  endTime?: Date
-} 
+  endTime?: Date;
+}

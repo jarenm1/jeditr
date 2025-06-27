@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { nanoid } from "nanoid";
-import React from "react";
+import type React from "react";
 
 export type ModalPosition = { x: number; y: number };
 

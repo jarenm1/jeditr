@@ -1,5 +1,5 @@
-import React from "react";
-import { EditorTab } from "../editor/editorStore";
+import type React from "react";
+import type { EditorTab } from "../editor/editorStore";
 
 interface TabBarProps {
   tabs: EditorTab[];

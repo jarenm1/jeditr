@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import { useModalStore, updateModalPosition, hideModal } from "./modalStore";
 import { Modal } from "./Modal";
 import { pluginWorkers } from "../../plugins/loader";

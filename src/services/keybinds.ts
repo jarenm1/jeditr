@@ -1,7 +1,7 @@
 // Global Keybind Registry and Dispatcher
 // Usage: import { registerKeybind, unregisterKeybind } from './keybinds';
 
-import { useKeybindStore, Keybind } from "../store/useKeybindStore";
+import { useKeybindStore, type Keybind } from "../store/useKeybindStore";
 
 // --- Keybinds as array of keys, e.g., ["Ctrl", "N"] ---
 
@@ -86,7 +86,7 @@ if (
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
   (window as any).__keybindDispatcherAttached = true;
-  
+
   // Note: Keybinds are now registered via settings.json and the API system
   // See src/api/keybinds.ts for the new registration system
 }

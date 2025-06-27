@@ -1,6 +1,9 @@
 /**
+ * @fileoverview
+ * @author @jarenm1
+ *
  * Jeditr Plugin API
- * 
+ *
  * Provides a unified interface for plugin management including:
  * - Loading local and GitHub plugins
  * - Plugin configuration and installation
@@ -9,8 +12,8 @@
  */
 
 // Core plugin functionality
-export * from './loader';
-export * from './githubLoader';
+export * from "./loader";
+export * from "./githubLoader";
 
 // Plugin registry (renamed exports to avoid conflicts)
 export {
@@ -22,8 +25,8 @@ export {
   getPlugin,
   getLoadedPlugins as getRegisteredPlugins,
   type PluginAPI,
-  type RegisteredPlugin
-} from './pluginRegistry';
+  type RegisteredPlugin,
+} from "./pluginRegistry";
 
 // Legacy plugin types for backward compatibility
 export interface BottomBarPlugin {
@@ -61,4 +64,4 @@ export function registerBottomBarPlugin(plugin: BottomBarPlugin) {
 
 export function registerEditorPanePlugin(plugin: EditorPanePlugin) {
   editorPaneRegistry.push(plugin);
-} 
+}

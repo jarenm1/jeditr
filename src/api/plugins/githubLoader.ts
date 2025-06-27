@@ -1,32 +1,40 @@
 /**
  * GitHub Plugin Loader
- * 
+ *
  * Inspired by lazy.nvim, this loader can fetch and cache plugins from GitHub repositories.
  * Supports both direct file URLs and repository-based plugin discovery.
  */
 
-import { PluginConfig } from './loader';
+import type { PluginConfig } from "./loader";
 
+/**
+ * GitHub Plugin Config
+ *
+ * @param url - GitHub repository in format "owner/repo" or direct raw URL
+ * @param branch - Git branch/tag to use (defaults to 'main')
+ * @param entryPoint - Path to plugin file within repo (defaults to 'plugin.js' or 'index.js')
+ * @param lazy - Enable lazy loading (load only when needed)
+ *
+ * @since 0.1.0
+ */
 export interface GitHubPluginConfig extends PluginConfig {
-  /** GitHub repository in format "owner/repo" or direct raw URL */
   url: string;
-  /** Git branch/tag to use (defaults to 'main') */
   branch?: string;
-  /** Path to plugin file within repo (defaults to 'plugin.js' or 'index.js') */
   entryPoint?: string;
-  /** Enable lazy loading (load only when needed) */
   lazy?: boolean;
-  /** Plugin dependencies (other GitHub plugins to load first) */
   dependencies?: string[];
-  /** Version/commit hash for pinning */
   version?: string;
-  /** Local cache configuration */
   cache?: {
     enabled: boolean;
     ttl?: number; // Time to live in milliseconds
   };
 }
 
+/**
+ * Plugin Manifest
+ *
+ * @since 0.1.0
+ */
 export interface PluginManifest {
   name: string;
   version: string;
@@ -41,34 +49,57 @@ export interface PluginManifest {
   };
 }
 
+/**
+ * GitHub Plugin Loader
+ *
+ * Inspired by lazy.nvim, this loader can fetch and cache plugins from GitHub repositories.
+ *
+ * @author @jarenm1
+ * @since 0.1.0
+ */
 class GitHubPluginLoader {
-  private cache = new Map<string, { content: string; timestamp: number; etag?: string }>();
+  private cache = new Map<
+    string,
+    { content: string; timestamp: number; etag?: string }
+  >();
   private loadedPlugins = new Set<string>();
   private loadingPromises = new Map<string, Promise<string>>();
 
   /**
    * Parse GitHub URL into components
+   *
+   * @param url - The GitHub URL to parse
+   * @returns The parsed URL components
+   *
+   * @since 0.1.0
    */
-  private parseGitHubUrl(url: string): { owner: string; repo: string; branch: string; path: string } | null {
+  private parseGitHubUrl(url: string): {
+    owner: string;
+    repo: string;
+    branch: string;
+    path: string;
+  } | null {
     // Handle direct raw.githubusercontent.com URLs
-    const rawMatch = url.match(/https:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.+)/);
+    const rawMatch = url.match(
+      /https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)/,
+    );
     if (rawMatch) {
       return {
         owner: rawMatch[1],
         repo: rawMatch[2],
         branch: rawMatch[3],
-        path: rawMatch[4]
+        path: rawMatch[4],
       };
     }
 
     // Handle "owner/repo" format
-    const shortMatch = url.match(/^([^\/]+)\/([^\/]+)$/);
+    const shortMatch = url.match(/^([^/]+)\/([^/]+)$/);
     if (shortMatch) {
       return {
         owner: shortMatch[1],
         repo: shortMatch[2],
-        branch: 'main',
-        path: 'plugin.js' // Default entry point
+        branch: "main",
+        path: "index.js", // Default entry point
       };
     }
 
@@ -78,14 +109,22 @@ class GitHubPluginLoader {
   /**
    * Construct raw GitHub URL for file access
    */
-  private getRawUrl(owner: string, repo: string, branch: string, path: string): string {
+  private getRawUrl(
+    owner: string,
+    repo: string,
+    branch: string,
+    path: string,
+  ): string {
     return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
   }
 
   /**
    * Check if plugin is cached and valid
    */
-  private getCachedPlugin(url: string, ttl: number = 24 * 60 * 60 * 1000): string | null {
+  private getCachedPlugin(
+    url: string,
+    ttl: number = 24 * 60 * 60 * 1000,
+  ): string | null {
     const cached = this.cache.get(url);
     if (!cached) return null;
 
@@ -101,46 +140,52 @@ class GitHubPluginLoader {
   /**
    * Fetch plugin manifest (plugin.json or package.json)
    */
-  private async fetchManifest(owner: string, repo: string, branch: string): Promise<PluginManifest | null> {
-    const manifestPaths = ['plugin.json', 'package.json', 'manifest.json'];
-    
+  private async fetchManifest(
+    owner: string,
+    repo: string,
+    branch: string,
+  ): Promise<PluginManifest | null> {
+    const manifestPaths = ["plugin.json", "package.json", "manifest.json"];
+
     for (const manifestPath of manifestPaths) {
       try {
         const url = this.getRawUrl(owner, repo, branch, manifestPath);
         const response = await fetch(url);
-        
+
         if (response.ok) {
           const manifest = await response.json();
-          
+
           // Adapt package.json to PluginManifest format if needed
-          if (manifestPath === 'package.json') {
+          if (manifestPath === "package.json") {
             return {
               name: manifest.name,
               version: manifest.version,
               description: manifest.description,
               author: manifest.author,
-              main: manifest.main || 'plugin.js',
-              dependencies: manifest.jeditrDependencies || manifest.peerDependencies,
+              main: manifest.main || "plugin.js",
+              dependencies:
+                manifest.jeditrDependencies || manifest.peerDependencies,
               permissions: manifest.jeditrPermissions,
-              api: manifest.jeditrApi
+              api: manifest.jeditrApi,
             };
           }
-          
+
           return manifest;
         }
       } catch (error) {
-        // Continue to next manifest path
-        continue;
       }
     }
-    
+
     return null;
   }
 
   /**
    * Fetch plugin code from GitHub with caching
    */
-  private async fetchPluginCode(url: string, useCache: boolean = true): Promise<string> {
+  private async fetchPluginCode(
+    url: string,
+    useCache: boolean = true,
+  ): Promise<string> {
     // Check if already loading
     if (this.loadingPromises.has(url)) {
       return this.loadingPromises.get(url)!;
@@ -172,31 +217,35 @@ class GitHubPluginLoader {
       // Try as direct URL
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`Failed to fetch plugin from ${url}: ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch plugin from ${url}: ${response.statusText}`,
+        );
       }
       return response.text();
     }
 
     const { owner, repo, branch, path } = parsed;
-    
+
     // Try to fetch manifest first for better error handling
     const manifest = await this.fetchManifest(owner, repo, branch);
     const entryPoint = manifest?.main || path;
-    
+
     const pluginUrl = this.getRawUrl(owner, repo, branch, entryPoint);
     const response = await fetch(pluginUrl);
-    
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch plugin ${owner}/${repo}@${branch}:${entryPoint}: ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch plugin ${owner}/${repo}@${branch}:${entryPoint}: ${response.statusText}`,
+      );
     }
 
     const content = await response.text();
-    
+
     // Cache the result
     this.cache.set(url, {
       content,
       timestamp: Date.now(),
-      etag: response.headers.get('etag') || undefined
+      etag: response.headers.get("etag") || undefined,
     });
 
     return content;
@@ -210,7 +259,9 @@ class GitHubPluginLoader {
       // Check if already loaded
       if (this.loadedPlugins.has(config.url)) {
         console.warn(`Plugin ${config.name} already loaded from ${config.url}`);
-        throw new Error(`Plugin ${config.name} already loaded from ${config.url}`);
+        throw new Error(
+          `Plugin ${config.name} already loaded from ${config.url}`,
+        );
       }
 
       // Load dependencies first
@@ -223,12 +274,12 @@ class GitHubPluginLoader {
       const pluginCode = await this.fetchPluginCode(config.url, cacheEnabled);
 
       // Create blob URL for the worker
-      const blob = new Blob([pluginCode], { type: 'application/javascript' });
+      const blob = new Blob([pluginCode], { type: "application/javascript" });
       const workerUrl = URL.createObjectURL(blob);
 
       // Create and configure worker
-      const worker = new Worker(workerUrl, { type: 'module' });
-      
+      const worker = new Worker(workerUrl, { type: "module" });
+
       // Clean up blob URL after worker creation
       URL.revokeObjectURL(workerUrl);
 
@@ -237,7 +288,6 @@ class GitHubPluginLoader {
 
       console.log(`Loaded plugin: ${config.name} from ${config.url}`);
       return worker;
-
     } catch (error) {
       console.error(`Failed to load plugin ${config.name}:`, error);
       throw error;
@@ -253,7 +303,7 @@ class GitHubPluginLoader {
         // Recursively load dependency
         await this.loadGitHubPlugin({
           name: `dependency-${dep}`,
-          url: dep
+          url: dep,
         });
       }
     }
@@ -262,7 +312,9 @@ class GitHubPluginLoader {
   /**
    * Install plugin (fetch and validate but don't load)
    */
-  async installPlugin(config: GitHubPluginConfig): Promise<PluginManifest | null> {
+  async installPlugin(
+    config: GitHubPluginConfig,
+  ): Promise<PluginManifest | null> {
     const parsed = this.parseGitHubUrl(config.url);
     if (!parsed) return null;
 
@@ -284,18 +336,21 @@ class GitHubPluginLoader {
   /**
    * Get cache stats
    */
-  getCacheStats(): { size: number; entries: Array<{ url: string; timestamp: number; size: number }> } {
+  getCacheStats(): {
+    size: number;
+    entries: Array<{ url: string; timestamp: number; size: number }>;
+  } {
     const entries = Array.from(this.cache.entries()).map(([url, data]) => ({
       url,
       timestamp: data.timestamp,
-      size: data.content.length
+      size: data.content.length,
     }));
 
     return {
       size: this.cache.size,
-      entries
+      entries,
     };
   }
 }
 
-export const githubPluginLoader = new GitHubPluginLoader(); 
+export const githubPluginLoader = new GitHubPluginLoader();

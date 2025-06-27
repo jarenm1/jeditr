@@ -7,7 +7,7 @@
     "skipLibCheck": true,
     "paths": {
       "@components/*": ["./src/components/*"],
-      "@api/*": ["./src/api/*"],
+      "@api/*": ["./src/api/*"]
     },
 
     /* Bundler mode */
